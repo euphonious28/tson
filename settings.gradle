@@ -1,0 +1,5 @@
+rootProject.name = 'tson'
+include 'tson-interpreter'
+include 'tson-file-reader'
+include 'tson-assertion-engine'
+include 'tson-rest-client-interface'
