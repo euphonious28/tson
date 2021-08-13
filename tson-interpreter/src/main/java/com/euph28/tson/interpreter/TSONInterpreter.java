@@ -1,5 +1,6 @@
 package com.euph28.tson.interpreter;
 
+import com.euph28.tson.interpreter.interpreter.Interpretation;
 import com.euph28.tson.interpreter.keyword.Keyword;
 import com.euph28.tson.interpreter.keyword.KeywordProvider;
 import com.euph28.tson.interpreter.provider.ContentProvider;
@@ -8,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Main access point for the TSON Interpreter
@@ -32,6 +34,11 @@ public class TSONInterpreter {
      */
     List<Keyword> keywordList = new ArrayList<>();
 
+    /**
+     * Interpretation of a TSON content. Can be converted to a list in the future for parallel run
+     */
+    Interpretation interpretation;
+
     /* ----- CONSTRUCTOR ------------------------------ */
 
     public TSONInterpreter() {
@@ -49,9 +56,16 @@ public class TSONInterpreter {
     public boolean interpret(String sourceName) {
         // Retrieve content
         String content = getContentFromProvider(sourceName);
-        if (content.isEmpty()) {     // Early check if content retrieval failed
+        if (content.isEmpty()) {                // Early check if content retrieval failed
             return false;
         }
+
+        // Perform interpretation and store result
+        Interpretation interpretation = new Interpretation(getKeywords(), content);
+        if(!interpretation.isValid()) {         // Early check if interpretation failed
+            return false;
+        }
+        this.interpretation = interpretation;
 
         return true;
     }
@@ -76,6 +90,18 @@ public class TSONInterpreter {
     }
 
     /**
+     * Retrieve the list of {@link Keyword} provided by the {@link KeywordProvider}
+     *
+     * @return List of {@link Keyword} provided
+     */
+    List<Keyword> getKeywords() {
+        return keywordProviderList
+                .stream()
+                .flatMap(provider -> provider.getKeywordList().stream())
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Add a {@link ContentProvider} that is capable of resolving from source name to content
      *
      * @param contentProvider Provider to be added
@@ -86,6 +112,12 @@ public class TSONInterpreter {
         }
     }
 
+    /**
+     * Retrieve content from providers based on source name (using {@link ContentProvider#getContent(String)}
+     *
+     * @param sourceName Source name to be used for the providers
+     * @return Returns the first resolved content. Returns an empty {@code String} if none of the providers were able to resolve
+     */
     String getContentFromProvider(String sourceName) {
         logger.trace("Retrieving content for: " + sourceName);
         for (ContentProvider provider : contentProviderList) {
