@@ -10,11 +10,6 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-}
-
 allprojects {
     plugins.withType(JavaPlugin) {
         dependencies {
@@ -24,8 +19,23 @@ allprojects {
     }
 }
 
-test {
-    useJUnitPlatform()
+sourceSets {
+    main {
+        java {
+            srcDir project(':tson-assertion-engine').file('src/main/java')
+            srcDir project(':tson-file-reader').file('src/main/java')
+            srcDir project(':tson-interpreter').file('src/main/java')
+            srcDir project(':tson-rest-client').file('src/main/java')
+        }
+    }
+}
+
+jar {
+//    from {
+//        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+//    } {
+//        exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+//    }
 }
 
 publishing {

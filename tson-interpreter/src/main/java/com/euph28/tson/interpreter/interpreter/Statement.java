@@ -35,4 +35,14 @@ public class Statement {
         this.keyword = keyword;
         this.value = value;
     }
+
+    /* ----- GETTERS ------------------------------ */
+
+    public Keyword getKeyword() {
+        return keyword;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }

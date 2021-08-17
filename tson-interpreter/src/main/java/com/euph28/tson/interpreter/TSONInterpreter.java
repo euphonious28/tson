@@ -1,6 +1,7 @@
 package com.euph28.tson.interpreter;
 
 import com.euph28.tson.interpreter.interpreter.Interpretation;
+import com.euph28.tson.interpreter.interpreter.Statement;
 import com.euph28.tson.interpreter.keyword.Keyword;
 import com.euph28.tson.interpreter.keyword.KeywordProvider;
 import com.euph28.tson.interpreter.provider.ContentProvider;
@@ -68,6 +69,36 @@ public class TSONInterpreter {
         this.interpretation = interpretation;
 
         return true;
+    }
+
+    /* ----- METHODS: ITERATOR ------------------------------ */
+
+    /**
+     * @see Interpretation#peek()
+     */
+    public Statement peek() {
+        return interpretation.peek();
+    }
+
+    /**
+     * @see Interpretation#getNext()
+     */
+    public Statement getNext() {
+        return interpretation.getNext();
+    }
+
+    /**
+     * @see Interpretation#isEof()
+     */
+    public boolean isEof() {
+        return interpretation.isEof();
+    }
+
+    /**
+     * @see Interpretation#resetIterator()
+     */
+    public void resetIterator() {
+        interpretation.resetIterator();
     }
 
     /* ----- METHODS: PROVIDERS ------------------------------ */

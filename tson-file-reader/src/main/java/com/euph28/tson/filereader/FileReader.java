@@ -17,6 +17,22 @@ public class FileReader implements ContentProvider {
 
     final Logger logger = LoggerFactory.getLogger(FileReader.class);
 
+    /**
+     * Prefix to the file path, used for specifying a root directory to add before the filename
+     */
+    String filePrefix = "";
+
+    /* ----- CONSTRUCTOR ------------------------------ */
+    public FileReader() {}
+
+    /**
+     * Create a file reader capable of reading file content to String
+     * @param rootDirectory Root directory to add to the front of the filename
+     */
+    public FileReader(String rootDirectory) {
+        this.filePrefix = rootDirectory;
+    }
+
     /* ----- METHODS ------------------------------ */
 
     /**
