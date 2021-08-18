@@ -42,6 +42,7 @@ public class FileReader implements ContentProvider {
      * @return String with all the content within {@code filename}. Returns an empty {@code String} if reading failed
      */
     String readFile(String filename) {
+        filename = filePrefix + filename;
         logger.trace("Reading file: " + filename);
 
         try {

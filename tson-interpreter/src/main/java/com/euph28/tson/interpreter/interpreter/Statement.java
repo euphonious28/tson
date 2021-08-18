@@ -1,6 +1,5 @@
 package com.euph28.tson.interpreter.interpreter;
 
-import com.euph28.tson.interpreter.TSONInterpreter;
 import com.euph28.tson.interpreter.keyword.Keyword;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

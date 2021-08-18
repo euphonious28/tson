@@ -14,7 +14,7 @@ public class KeywordSend extends KeywordBase {
     /* ----- OVERRIDE: KeywordBase ------------------------------ */
     @Override
     public String getCode() {
-        return "JSON";
+        return "SEND";
     }
 
     @Override

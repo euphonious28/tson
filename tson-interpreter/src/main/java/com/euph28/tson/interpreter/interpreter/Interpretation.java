@@ -78,6 +78,7 @@ public class Interpretation {
                         .replaceAll("[\\t\\n\\r]+", " ")    // Newline
                         .replaceAll("  +", " ")             // Double spaces
                 )
+                .filter(s -> !s.isEmpty() && !s.equals(" "))            // Remove empty Strings
                 .map(s -> {                                             // Convert from String->Statement
                     Keyword keyword = keywordList
                             .stream()
@@ -91,7 +92,7 @@ public class Interpretation {
                         return null;
                     }
 
-                    return new Statement(keyword, s.substring(keyword.getCode().length()));
+                    return new Statement(keyword, s.substring(keyword.getCode().length() + 1));
                 })
                 .filter(Objects::nonNull)                               // Remove null objects (keyword mapping failed)
                 .collect(Collectors.toList());

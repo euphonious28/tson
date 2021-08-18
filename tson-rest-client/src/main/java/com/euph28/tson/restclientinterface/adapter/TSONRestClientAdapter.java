@@ -3,13 +3,13 @@ package com.euph28.tson.restclientinterface.adapter;
 import com.euph28.tson.interpreter.keyword.Keyword;
 import com.euph28.tson.interpreter.keyword.KeywordProvider;
 import com.euph28.tson.interpreter.provider.ContentProvider;
+import com.euph28.tson.restclientinterface.keywords.KeywordSend;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TSONRestClientAdapter implements KeywordProvider {
     /* ----- VARIABLES ------------------------------ */
-    List<Keyword> keywordList;
-
     ContentProvider contentProvider;
 
     /* ----- VARIABLES: REST ------------------------------ */
@@ -37,6 +37,9 @@ public class TSONRestClientAdapter implements KeywordProvider {
     /* ----- OVERRIDE: KeywordProvider ------------------------------ */
     @Override
     public List<Keyword> getKeywordList() {
+        // TODO: Load all classes in package
+        List<Keyword> keywordList = new ArrayList<>();
+        keywordList.add(new KeywordSend(this));
         return keywordList;
     }
 
