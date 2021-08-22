@@ -4,13 +4,23 @@ package com.euph28.tson.interpreter.data;
  * Data related to request sent to server
  */
 public class RequestData {
-    String body;
+    /* ----- VARIABLES ------------------------------ */
+    String requestUrl;
+    String requestBody;
 
-    public RequestData(String body) {
-        this.body = body;
+    /* ----- CONSTRUCTOR ------------------------------ */
+    public RequestData(String requestUrl, String requestBody) {
+        this.requestUrl = requestUrl;
+        this.requestBody = requestBody;
     }
 
-    public String getBody() {
-        return body;
+    /* ----- SETTERS & GETTERS ------------------------------ */
+
+    public String getRequestUrl() {
+        return requestUrl;
+    }
+
+    public String getRequestBody() {
+        return requestBody;
     }
 }

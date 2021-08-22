@@ -1,14 +1,14 @@
-package com.euph28.tson.restclientinterface.keywords;
+package com.euph28.tson.restclientinterface.keyword;
 
 import com.euph28.tson.interpreter.data.RequestData;
 import com.euph28.tson.interpreter.data.ResponseData;
-import com.euph28.tson.restclientinterface.adapter.TSONRestClientAdapter;
+import com.euph28.tson.restclientinterface.TSONRestClient;
 
 public class KeywordSend extends KeywordBase {
 
     /* ----- CONSTRUCTOR ------------------------------ */
-    public KeywordSend(TSONRestClientAdapter tsonRestClientAdapter) {
-        super(tsonRestClientAdapter);
+    public KeywordSend(TSONRestClient tsonRestClient) {
+        super(tsonRestClient);
     }
 
     /* ----- OVERRIDE: KeywordBase ------------------------------ */
@@ -29,7 +29,7 @@ public class KeywordSend extends KeywordBase {
 
     @Override
     public boolean handle(RequestData requestData, ResponseData responseData, String value) {
-        tsonRestClientAdapter.setRequestBody(value, true);
+        tsonRestClient.setRequestBody(value, true);
         return true;
     }
 }

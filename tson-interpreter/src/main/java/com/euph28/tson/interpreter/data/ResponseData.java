@@ -4,13 +4,23 @@ package com.euph28.tson.interpreter.data;
  * Data related to response received from server
  */
 public class ResponseData {
-    String body;
+    /* ----- VARIABLES ------------------------------ */
+    String responseBody;
+    int responseStatus;
 
-    public ResponseData(String body) {
-        this.body = body;
+    /* ----- CONSTRUCTOR ------------------------------ */
+    public ResponseData(int responseStatus, String responseBody) {
+        this.responseStatus = responseStatus;
+        this.responseBody = responseBody;
     }
 
-    public String getBody() {
-        return body;
+    /* ----- SETTERS & GETTERS ------------------------------ */
+
+    public int getResponseStatus() {
+        return responseStatus;
+    }
+
+    public String getResponseBody() {
+        return responseBody;
     }
 }
