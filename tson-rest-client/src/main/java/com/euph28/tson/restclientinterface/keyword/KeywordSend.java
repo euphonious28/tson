@@ -28,8 +28,14 @@ public class KeywordSend extends KeywordBase {
     }
 
     @Override
+    public boolean isAction() {
+        return true;
+    }
+
+    @Override
     public boolean handle(RequestData requestData, ResponseData responseData, String value) {
         tsonRestClient.setRequestBody(value, true);
+        tsonRestClient.send();
         return true;
     }
 }

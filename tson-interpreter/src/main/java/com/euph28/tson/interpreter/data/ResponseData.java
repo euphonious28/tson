@@ -8,10 +8,16 @@ public class ResponseData {
     String responseBody;
     int responseStatus;
 
+    /**
+     * Response duration in nanoseconds
+     */
+    int responseDuration;
+
     /* ----- CONSTRUCTOR ------------------------------ */
-    public ResponseData(int responseStatus, String responseBody) {
+    public ResponseData(int responseStatus, String responseBody, int responseDuration) {
         this.responseStatus = responseStatus;
         this.responseBody = responseBody;
+        this.responseDuration = responseDuration;
     }
 
     /* ----- SETTERS & GETTERS ------------------------------ */
@@ -22,5 +28,9 @@ public class ResponseData {
 
     public String getResponseBody() {
         return responseBody;
+    }
+
+    public int getResponseDuration() {
+        return responseDuration;
     }
 }

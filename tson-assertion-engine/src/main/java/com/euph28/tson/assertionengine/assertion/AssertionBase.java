@@ -50,22 +50,7 @@ public abstract class AssertionBase extends Keyword {
         assertionResultList.add(new AssertionResult(this, false, description));
     }
 
-    /* ----- OVERRIDE: HANDLE ------------------------------ */
-
-    /**
-     * Calls {@link #handleAssertion(RequestData, ResponseData, String)} and returns results to {@link #tsonAssertionEngine}. <br/>
-     * Do not override unless you plan to alter how data is returned to {@link #tsonAssertionEngine}
-     */
-    @Override
-    public boolean handle(RequestData requestData, ResponseData responseData, String value) {
-        // Perform assertion (and populate assertionResultList)
-        boolean status = handleAssertion(requestData, responseData, value);
-
-        // Report result to AssertionEngine
-        tsonAssertionEngine.addAssertionResult(assertionResultList);
-
-        return status;
-    }
+    /* ----- METHODS ------------------------------ */
 
     /**
      * Handle the assertion based on the provided data. Use {@link #resultPass(String)} and {@link #resultFail(String)}
@@ -77,4 +62,29 @@ public abstract class AssertionBase extends Keyword {
      * @return Returns true if handle was successful
      */
     protected abstract boolean handleAssertion(RequestData requestData, ResponseData responseData, String value);
+
+    /* ----- OVERRIDE: KEYWORD BASE ------------------------------ */
+
+    /**
+     * Calls {@link #handleAssertion(RequestData, ResponseData, String)} and returns results to {@link #tsonAssertionEngine}. <br/>
+     * Do not override unless you plan to alter how data is returned to {@link #tsonAssertionEngine}
+     */
+    @Override
+    public boolean handle(RequestData requestData, ResponseData responseData, String value) {
+        // Reset result list
+        assertionResultList.clear();
+
+        // Perform assertion (and populate assertionResultList)
+        boolean status = handleAssertion(requestData, responseData, value);
+
+        // Report result to AssertionEngine
+        tsonAssertionEngine.addAssertionResult(assertionResultList);
+
+        return status;
+    }
+
+    @Override
+    public boolean isAction() {
+        return true;
+    }
 }

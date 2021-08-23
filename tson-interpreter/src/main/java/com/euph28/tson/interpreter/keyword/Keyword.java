@@ -8,7 +8,7 @@ import com.euph28.tson.interpreter.data.ResponseData;
  */
 public abstract class Keyword {
 
-    /* ----- GETTERS ------------------------------ */
+    /* ----- GETTERS: SYNTAX ------------------------------ */
 
     /**
      * Retrieve the code version of this {@link Keyword}. This is the text used within a TSON file
@@ -30,6 +30,14 @@ public abstract class Keyword {
      * @return Long description of this {@link Keyword}
      */
     public abstract String getDescriptionLong();
+
+    /* ----- GETTERS: BEHAVIOUR ------------------------------ */
+
+    /**
+     * Behaviour attribute on whether this {@link Keyword} performs an action (eg: Assertion, Send)
+     * @return Returns {@code true} if this {@link Keyword} performs an action
+     */
+    public abstract boolean isAction();
 
     /* ----- HANDLERS ------------------------------ */
 

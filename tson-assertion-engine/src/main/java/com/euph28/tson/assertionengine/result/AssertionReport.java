@@ -14,6 +14,8 @@ public class AssertionReport {
      */
     List<AssertionResult> assertionResultList = new ArrayList<>();
 
+    String reportName;
+
     int countPass, countFail = 0;
 
     /* ----- CONSTRUCTOR ------------------------------ */
@@ -55,5 +57,15 @@ public class AssertionReport {
 
     public int getCountFail() {
         return countFail;
+    }
+
+    public String getReportName() {
+        return reportName;
+    }
+
+    public String getSummary() {
+        StringBuilder stringBuilder = new StringBuilder();
+        assertionResultList.forEach(result -> stringBuilder.append(result.getDescription()));
+        return stringBuilder.toString();
     }
 }

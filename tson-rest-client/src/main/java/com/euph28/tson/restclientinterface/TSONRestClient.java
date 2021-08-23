@@ -15,6 +15,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,7 +73,11 @@ public class TSONRestClient implements KeywordProvider {
 
         // Connection
         HttpURLConnection connection;
-        String urlString = requestUrl + ":" + requestPort + requestRoute;
+        String urlString = requestUrl
+                + ":"
+                + requestPort
+                + (requestRoute.startsWith("/") ? "" : "/")
+                + requestRoute;
 
         // Setup request
         try {
@@ -103,12 +109,19 @@ public class TSONRestClient implements KeywordProvider {
         }
 
         // Send request
+        Duration responseDuration = null;
         try {
             // Trigger listeners (before send)
             listenerList.forEach(listener -> listener.onBeforeSend(this));
 
+            // Response duration: start
+            Instant instantStart = Instant.now();
+
             // Connect
             connection.connect();
+
+            // Response duration: end
+            responseDuration = Duration.between(instantStart, Instant.now());
 
             // Trigger listeners (after send)
             listenerList.forEach(listener -> listener.onAfterSend(this, true));
@@ -130,7 +143,11 @@ public class TSONRestClient implements KeywordProvider {
 
             // Generate result objects
             requestData = new RequestData(urlString, requestBody);
-            responseData = new ResponseData(connection.getResponseCode(), inputBuffer.toString());
+            responseData = new ResponseData(
+                    connection.getResponseCode(),
+                    inputBuffer.toString(),
+                    responseDuration.getNano()
+            );
 
         } catch (IOException e) {
             logger.error("Failed to read response results", e);
