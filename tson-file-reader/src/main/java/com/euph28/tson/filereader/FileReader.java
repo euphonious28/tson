@@ -23,10 +23,16 @@ public class FileReader implements ContentProvider {
     String filePrefix = "";
 
     /* ----- CONSTRUCTOR ------------------------------ */
-    public FileReader() {}
 
     /**
      * Create a file reader capable of reading file content to String
+     */
+    public FileReader() {
+    }
+
+    /**
+     * Create a file reader capable of reading file content to String
+     *
      * @param rootDirectory Root directory to add to the front of the filename
      */
     public FileReader(String rootDirectory) {

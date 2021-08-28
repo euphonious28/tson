@@ -50,14 +50,30 @@ public class AssertionResult {
     }
 
     /* ----- GETTERS ------------------------------ */
+
+    /**
+     * Retrieve the pass state of this result
+     *
+     * @return Returns {@code true} if this result pass
+     */
     public boolean isPass() {
         return pass;
     }
 
+    /**
+     * Retrieve the {@link AssertionBase} that generated this result
+     *
+     * @return Assertion that generated this result
+     */
     public AssertionBase getAssertion() {
         return assertion;
     }
 
+    /**
+     * Retrieve the description of this result
+     *
+     * @return Description of this result
+     */
     public String getDescription() {
         return description;
     }

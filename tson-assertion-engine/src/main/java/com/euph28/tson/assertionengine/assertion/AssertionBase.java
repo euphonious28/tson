@@ -26,6 +26,12 @@ public abstract class AssertionBase extends Keyword {
     private final List<AssertionResult> assertionResultList = new ArrayList<>();
 
     /* ----- CONSTRUCTOR ------------------------------ */
+
+    /**
+     * Base of an Assertion Keyword
+     *
+     * @param tsonAssertionEngine TSON Assertion Engine that should handle results of this assertion
+     */
     AssertionBase(TSONAssertionEngine tsonAssertionEngine) {
         this.tsonAssertionEngine = tsonAssertionEngine;
     }

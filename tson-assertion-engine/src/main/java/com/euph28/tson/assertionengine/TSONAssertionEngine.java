@@ -16,20 +16,40 @@ import java.util.List;
  */
 public class TSONAssertionEngine implements KeywordProvider {
     /* ----- VARIABLES ------------------------------ */
+    /**
+     * List of assertion reports that are pending read
+     */
     List<AssertionReport> assertionReportList = new ArrayList<>();
 
+    /**
+     * List of event listeners
+     */
     List<TSONAssertionEngineListener> listenerList = new ArrayList<>();
 
     /* ----- METHODS: Assertion result handling ------------------------------ */
+
+    /**
+     * Add {@link AssertionResult} to be reported
+     *
+     * @param assertionResultList List of {@link AssertionResult} to be reported
+     */
     public void addAssertionResult(List<AssertionResult> assertionResultList) {
         assertionReportList.add(new AssertionReport(assertionResultList));
         listenerList.forEach(listener -> listener.onAvailableReport(this));
     }
 
+    /**
+     * Get the current list of available {@link AssertionReport}
+     *
+     * @return List of available {@link AssertionReport}
+     */
     public List<AssertionReport> getAssertionReportList() {
         return Collections.unmodifiableList(assertionReportList);
     }
 
+    /**
+     * Clear the current list of available {@link AssertionReport}
+     */
     public void clearAssertionReports() {
         assertionReportList.clear();
     }
@@ -44,6 +64,12 @@ public class TSONAssertionEngine implements KeywordProvider {
     }
 
     /* ----- SETTERS & GETTERS: LISTENERS ------------------------------ */
+
+    /**
+     * Add a listener to listen for events from this assertion engine
+     *
+     * @param listener Listener to be added
+     */
     public void addListener(TSONAssertionEngineListener listener) {
         listenerList.add(listener);
     }

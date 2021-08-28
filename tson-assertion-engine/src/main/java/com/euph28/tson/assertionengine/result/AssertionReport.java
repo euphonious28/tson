@@ -14,16 +14,37 @@ public class AssertionReport {
      */
     List<AssertionResult> assertionResultList = new ArrayList<>();
 
-    String reportName;
+    /**
+     * Title of the report
+     */
+    String reportTitle;
 
-    int countPass, countFail = 0;
+    /**
+     * Count of number of {@link AssertionResult} that pass
+     */
+    int countPass = 0;
+
+    /**
+     * Count of number of {@link AssertionResult} that fail
+     */
+    int countFail = 0;
 
     /* ----- CONSTRUCTOR ------------------------------ */
+
+    /**
+     * Report containing a collection of {@link AssertionResult}
+     *
+     * @param resultList List of results to initialize the report with
+     */
     public AssertionReport(List<AssertionResult> resultList) {
         addResults(resultList);
     }
 
     /* ----- METHODS: INTERNAL ------------------------------ */
+
+    /**
+     * Evaluate results and update counters ({@link #countPass} and {@link #countFail})
+     */
     void evaluateResults() {
         countPass = (int) assertionResultList
                 .stream()
@@ -47,23 +68,48 @@ public class AssertionReport {
 
     /* ----- GETTERS ------------------------------ */
 
+    /**
+     * Retrieve the pass state of the report
+     *
+     * @return Returns {@code true} if there is no failure result
+     */
     public boolean isPass() {
         return countFail == 0;
     }
 
+    /**
+     * Retrieve the number of results that pass
+     *
+     * @return Number of results that pass
+     */
     public int getCountPass() {
         return countPass;
     }
 
+    /**
+     * Retrieve the number of results that fail
+     *
+     * @return Number of results that fail
+     */
     public int getCountFail() {
         return countFail;
     }
 
-    public String getReportName() {
-        return reportName;
+    /**
+     * Retrieve the title of this report
+     *
+     * @return Title of this report
+     */
+    public String getReportTitle() {
+        return reportTitle;
     }
 
-    public String getSummary() {
+    /**
+     * Retrieve the report of the results of this report. Report contains description of failures
+     *
+     * @return Report of the results
+     */
+    public String getReport() {
         StringBuilder stringBuilder = new StringBuilder();
         assertionResultList.forEach(result -> stringBuilder.append(result.getDescription()));
         return stringBuilder.toString();

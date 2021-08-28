@@ -4,6 +4,11 @@ import com.euph28.tson.assertionengine.TSONAssertionEngine;
 import com.euph28.tson.interpreter.data.RequestData;
 import com.euph28.tson.interpreter.data.ResponseData;
 
+/**
+ * Assertion keyword: Equal
+ *
+ * Compares a path to a value, reporting {@code PASS} if the actual value in the path is equal to the provided value
+ */
 public class AssertEqual extends AssertionBase {
 
     /* ----- CONSTRUCTOR ------------------------------ */

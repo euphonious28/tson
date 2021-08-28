@@ -4,6 +4,11 @@ import com.euph28.tson.interpreter.data.RequestData;
 import com.euph28.tson.interpreter.data.ResponseData;
 import com.euph28.tson.restclientinterface.TSONRestClient;
 
+/**
+ * Rest Client Keyword: Send request with specified body
+ * <p>
+ * Sends a request using the Rest Client with the provided {@code value} as the {@code requestBody}
+ */
 public class KeywordSend extends KeywordBase {
 
     /* ----- CONSTRUCTOR ------------------------------ */

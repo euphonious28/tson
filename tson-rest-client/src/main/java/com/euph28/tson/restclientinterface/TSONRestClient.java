@@ -20,28 +20,59 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Main access point for the TSON Rest Client
+ */
 public class TSONRestClient implements KeywordProvider {
     /* ----- VARIABLES ------------------------------ */
     final Logger logger = LoggerFactory.getLogger(TSONRestClient.class);
 
+    /**
+     * Content provider that is able to resolve content for {@link #requestBody}
+     */
     ContentProvider contentProvider;
 
     /* ----- VARIABLES: REST REQUEST ------------------------------ */
+    /**
+     * Request variable: Target hostname to send requests to
+     */
     String requestUrl = "localhost";
 
+    /**
+     * Request variable: Target port to send requests to
+     */
     int requestPort = 8080;
 
+    /**
+     * Request variable: Target route to send requests to
+     */
     String requestRoute = "/";
 
+    /**
+     * Request variable: Verb to be used when sending request
+     */
     String requestVerb = "POST";
 
+    /**
+     * Request variable: Content body to send in request
+     */
     String requestBody = "";
 
     /* ----- VARIABLES: REST RESPONSE ------------------------------ */
+    /**
+     * Request data of the last sent request
+     */
     RequestData requestData;
+
+    /**
+     * Response data of the last received response
+     */
     ResponseData responseData;
 
     /* ----- VARIABLES: LISTENERS ------------------------------ */
+    /**
+     * List of event listeners
+     */
     List<TSONRestClientListener> listenerList = new ArrayList<>();
 
     /* ----- CONSTRUCTOR ------------------------------ */
@@ -70,7 +101,6 @@ public class TSONRestClient implements KeywordProvider {
      * Send the REST request
      */
     public void send() {
-
         // Connection
         HttpURLConnection connection;
         String urlString = requestUrl
@@ -109,7 +139,7 @@ public class TSONRestClient implements KeywordProvider {
         }
 
         // Send request
-        Duration responseDuration = null;
+        Duration responseDuration;
         try {
             // Trigger listeners (before send)
             listenerList.forEach(listener -> listener.onBeforeSend(this));
@@ -155,62 +185,89 @@ public class TSONRestClient implements KeywordProvider {
     }
     /* ----- SETTERS & GETTERS: LISTENERS ------------------------------ */
 
+    /**
+     * Add a listener to listen for events from this Rest Client
+     *
+     * @param listener Listener to be added
+     */
     public void addListener(TSONRestClientListener listener) {
         listenerList.add(listener);
     }
 
     /* ----- SETTERS & GETTERS: REQUEST/RESPONSE DATA ------------------------------ */
 
+    /**
+     * Retrieve the last sent request data
+     *
+     * @return Data of last sent request
+     */
     public RequestData getRequestData() {
         return requestData;
     }
 
+    /**
+     * Retrieve the last received response data
+     *
+     * @return Data of last received response
+     */
     public ResponseData getResponseData() {
         return responseData;
     }
 
     /* ----- SETTERS & GETTERS: REQUEST VARIABLES ------------------------------ */
 
-    public String getRequestUrl() {
-        return requestUrl;
-    }
-
+    /**
+     * Set the hostname to send the request to
+     *
+     * @param requestUrl Hostname to send the request to
+     */
     public void setRequestUrl(String requestUrl) {
         this.requestUrl = requestUrl;
     }
 
-    public int getRequestPort() {
-        return requestPort;
-    }
-
+    /**
+     * Set the port to send the request to
+     *
+     * @param requestPort Port to send the request to
+     */
     public void setRequestPort(int requestPort) {
         this.requestPort = requestPort;
     }
 
-    public String getRequestRoute() {
-        return requestRoute;
-    }
-
+    /**
+     * Set the route to send the request to
+     *
+     * @param requestRoute Route to send the request to
+     */
     public void setRequestRoute(String requestRoute) {
         this.requestRoute = requestRoute;
     }
 
-    public String getRequestVerb() {
-        return requestVerb;
-    }
-
+    /**
+     * Set the verb to send the request with
+     *
+     * @param requestVerb Verb to be used when sending request
+     */
     public void setRequestVerb(String requestVerb) {
         this.requestVerb = requestVerb;
     }
 
-    public String getRequestBody() {
-        return requestBody;
-    }
-
+    /**
+     * Set the body content to send in the request. To use the {@link ContentProvider}, use {@link #setRequestBody(String, boolean)}
+     *
+     * @param requestBody Body content to be used when sending request
+     */
     public void setRequestBody(String requestBody) {
         this.requestBody = requestBody;
     }
 
+    /**
+     * Set the body content to send in the request.
+     * If specified to use the {@link ContentProvider}, the value will be used as a source name for resolving
+     *
+     * @param requestBody        Body content to be used when sending request/Source name to be resolved for body content
+     * @param useContentProvider Specifies if the {@code requestBody} should be sent to the {@link ContentProvider} to be resolved
+     */
     public void setRequestBody(String requestBody, boolean useContentProvider) {
         if (useContentProvider) {
             setRequestBody(contentProvider.getContent(requestBody));

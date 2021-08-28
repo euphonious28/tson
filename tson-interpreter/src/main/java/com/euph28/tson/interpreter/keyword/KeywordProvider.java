@@ -9,6 +9,7 @@ public interface KeywordProvider {
 
     /**
      * Retrieve a list of {@link Keyword} that should be processed by the interpreter
+     *
      * @return List of {@link Keyword}
      */
     List<Keyword> getKeywordList();

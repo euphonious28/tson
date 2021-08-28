@@ -37,10 +37,20 @@ public class Statement {
 
     /* ----- GETTERS ------------------------------ */
 
+    /**
+     * Retrieve the keyword of this statement
+     *
+     * @return Keyword of this statement
+     */
     public Keyword getKeyword() {
         return keyword;
     }
 
+    /**
+     * Retrieve the value of this statement to be sent to the {@link Keyword}
+     *
+     * @return Values of this statement
+     */
     public String getValue() {
         return value;
     }

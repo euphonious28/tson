@@ -35,6 +35,7 @@ public abstract class Keyword {
 
     /**
      * Behaviour attribute on whether this {@link Keyword} performs an action (eg: Assertion, Send)
+     *
      * @return Returns {@code true} if this {@link Keyword} performs an action
      */
     public abstract boolean isAction();
