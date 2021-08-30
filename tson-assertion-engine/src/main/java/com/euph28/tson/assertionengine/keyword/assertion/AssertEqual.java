@@ -35,12 +35,12 @@ public class AssertEqual extends AssertionBase {
     @Override
     protected boolean handleAssertion(RequestData requestData, ResponseData responseData, String value) {
         // Split into entries
-        String[] values = value.split(";");
+        String[] values = split(value, ' ', false);
 
         for (String s : values) {
             // Split into before and after the =
-            String path = s.split("=")[0];
-            String expectedValue = s.split("=")[1];
+            String path = split(s, '=', true)[0];
+            String expectedValue = split(s, '=', true)[1];
 
             if (path.equals(expectedValue)) {
                 resultPass("Value is equal to path");
