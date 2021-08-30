@@ -112,6 +112,22 @@ public class Interpretation {
     }
 
     /**
+     * Retrieve the next {@link Statement} in the iterator that is an action ({@link Keyword#isAction()}). Does not move the iterator forward
+     *
+     * @return Returns the next {@link Statement} that has {@link Keyword#isAction()}{@code ==true}.
+     * Returns {@code null} if it has reached the end without finding a suitable match
+     */
+    public Statement peekAction() {
+        return !isEof() ?
+                statementList.subList(iteratorNextIndex, statementList.size())
+                        .stream()
+                        .filter(statement -> statement.getKeyword().isAction())
+                        .findFirst()
+                        .orElse(null)
+                : null;
+    }
+
+    /**
      * Retrieve the next {@link Statement} in the iterator and moves the iterator forward
      *
      * @return Returns the next {@link Statement}. Returns {@code null} if it has reached the end (see {@link #isEof()}

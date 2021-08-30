@@ -1,6 +1,6 @@
 package com.euph28.tson.assertionengine.result;
 
-import com.euph28.tson.assertionengine.assertion.AssertionBase;
+import com.euph28.tson.assertionengine.keyword.assertion.AssertionBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

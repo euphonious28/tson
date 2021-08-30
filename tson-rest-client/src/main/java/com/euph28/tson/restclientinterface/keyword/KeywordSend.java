@@ -1,5 +1,6 @@
 package com.euph28.tson.restclientinterface.keyword;
 
+import com.euph28.tson.interpreter.TSONInterpreter;
 import com.euph28.tson.interpreter.data.RequestData;
 import com.euph28.tson.interpreter.data.ResponseData;
 import com.euph28.tson.restclientinterface.TSONRestClient;
@@ -38,7 +39,7 @@ public class KeywordSend extends KeywordBase {
     }
 
     @Override
-    public boolean handle(RequestData requestData, ResponseData responseData, String value) {
+    public boolean handle(TSONInterpreter tsonInterpreter, RequestData requestData, ResponseData responseData, String value) {
         tsonRestClient.setRequestBody(value, true);
         tsonRestClient.send();
         return true;

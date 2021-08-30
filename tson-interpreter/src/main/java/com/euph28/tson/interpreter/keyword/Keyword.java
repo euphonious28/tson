@@ -1,5 +1,6 @@
 package com.euph28.tson.interpreter.keyword;
 
+import com.euph28.tson.interpreter.TSONInterpreter;
 import com.euph28.tson.interpreter.data.RequestData;
 import com.euph28.tson.interpreter.data.ResponseData;
 
@@ -45,12 +46,13 @@ public abstract class Keyword {
     /**
      * Handle the processing of this {@link Keyword}
      *
-     * @param requestData  Request data of the last sent request
-     * @param responseData Response data of the last received response
-     * @param value        Additional value for this {@link Keyword} provided in the TSON file
+     * @param tsonInterpreter TSON Interpreter that has been handling the interpretation
+     * @param requestData     Request data of the last sent request
+     * @param responseData    Response data of the last received response
+     * @param value           Additional value for this {@link Keyword} provided in the TSON file
      * @return Returns true if handle was successful
      */
-    public abstract boolean handle(RequestData requestData, ResponseData responseData, String value);
+    public abstract boolean handle(TSONInterpreter tsonInterpreter, RequestData requestData, ResponseData responseData, String value);
 
     /* ----- OVERRIDE: EQUALS ------------------------------ */
 

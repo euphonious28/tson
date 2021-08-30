@@ -1,9 +1,11 @@
-package com.euph28.tson.assertionengine.assertion;
+package com.euph28.tson.assertionengine.keyword.assertion;
 
 import com.euph28.tson.assertionengine.TSONAssertionEngine;
 import com.euph28.tson.assertionengine.result.AssertionResult;
+import com.euph28.tson.interpreter.TSONInterpreter;
 import com.euph28.tson.interpreter.data.RequestData;
 import com.euph28.tson.interpreter.data.ResponseData;
+import com.euph28.tson.interpreter.interpreter.Statement;
 import com.euph28.tson.interpreter.keyword.Keyword;
 
 import java.util.ArrayList;
@@ -76,7 +78,7 @@ public abstract class AssertionBase extends Keyword {
      * Do not override unless you plan to alter how data is returned to {@link #tsonAssertionEngine}
      */
     @Override
-    public boolean handle(RequestData requestData, ResponseData responseData, String value) {
+    public boolean handle(TSONInterpreter tsonInterpreter, RequestData requestData, ResponseData responseData, String value) {
         // Reset result list
         assertionResultList.clear();
 
@@ -85,6 +87,12 @@ public abstract class AssertionBase extends Keyword {
 
         // Report result to AssertionEngine
         tsonAssertionEngine.addAssertionResult(assertionResultList);
+
+        // Check if AssertionEngine should publish result (publish if next action is not an assertion)
+        Statement nextStatementAction = tsonInterpreter.peekAction();
+        if (nextStatementAction == null || !(nextStatementAction.getKeyword() instanceof AssertionBase)) {
+            tsonAssertionEngine.publishCurrentAssertionResult();
+        }
 
         return status;
     }

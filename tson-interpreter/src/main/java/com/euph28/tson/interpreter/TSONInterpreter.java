@@ -81,6 +81,13 @@ public class TSONInterpreter {
     }
 
     /**
+     * @see Interpretation#peekAction()
+     */
+    public Statement peekAction() {
+        return interpretation.peekAction();
+    }
+
+    /**
      * @see Interpretation#getNext()
      */
     public Statement getNext() {

@@ -1,6 +1,7 @@
 package com.euph28.tson.assertionengine;
 
-import com.euph28.tson.assertionengine.assertion.AssertEqual;
+import com.euph28.tson.assertionengine.keyword.Assert;
+import com.euph28.tson.assertionengine.keyword.assertion.AssertEqual;
 import com.euph28.tson.assertionengine.listener.TSONAssertionEngineListener;
 import com.euph28.tson.assertionengine.result.AssertionReport;
 import com.euph28.tson.assertionengine.result.AssertionResult;
@@ -22,6 +23,11 @@ public class TSONAssertionEngine implements KeywordProvider {
     List<AssertionReport> assertionReportList = new ArrayList<>();
 
     /**
+     * Current assertion report that is being written to
+     */
+    AssertionReport currentAssertionReport = new AssertionReport();
+
+    /**
      * List of event listeners
      */
     List<TSONAssertionEngineListener> listenerList = new ArrayList<>();
@@ -34,8 +40,27 @@ public class TSONAssertionEngine implements KeywordProvider {
      * @param assertionResultList List of {@link AssertionResult} to be reported
      */
     public void addAssertionResult(List<AssertionResult> assertionResultList) {
-        assertionReportList.add(new AssertionReport(assertionResultList));
-        listenerList.forEach(listener -> listener.onAvailableReport(this));
+        currentAssertionReport.addResults(assertionResultList);
+    }
+
+    /**
+     * Mark the current {@link AssertionReport} as complete status
+     */
+    public void publishCurrentAssertionResult() {
+        if (currentAssertionReport.getCountPass() + currentAssertionReport.getCountFail() != 0) {
+            assertionReportList.add(currentAssertionReport);
+            currentAssertionReport = new AssertionReport();
+            listenerList.forEach(listener -> listener.onAvailableReport(this));
+        }
+    }
+
+    /**
+     * Set the title of the current report
+     *
+     * @param title Title of the current report
+     */
+    public void setCurrentAssertionReportTitle(String title) {
+        currentAssertionReport.setReportTitle(title);
     }
 
     /**
@@ -60,6 +85,7 @@ public class TSONAssertionEngine implements KeywordProvider {
         // TODO: Load all classes in package & external jar
         List<Keyword> keywordList = new ArrayList<>();
         keywordList.add(new AssertEqual(this));
+        keywordList.add(new Assert(this));
         return keywordList;
     }
 

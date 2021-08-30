@@ -40,6 +40,13 @@ public class AssertionReport {
         addResults(resultList);
     }
 
+    /**
+     * Report containing a collection of {@link AssertionResult}
+     */
+    public AssertionReport() {
+
+    }
+
     /* ----- METHODS: INTERNAL ------------------------------ */
 
     /**
@@ -64,6 +71,17 @@ public class AssertionReport {
     public void addResults(List<AssertionResult> resultList) {
         assertionResultList.addAll(resultList);
         evaluateResults();
+    }
+
+    /* ----- SETTERS ------------------------------ */
+
+    /**
+     * Set the title of this report
+     *
+     * @param reportTitle Title of this report
+     */
+    public void setReportTitle(String reportTitle) {
+        this.reportTitle = reportTitle;
     }
 
     /* ----- GETTERS ------------------------------ */
@@ -111,7 +129,7 @@ public class AssertionReport {
      */
     public String getReport() {
         StringBuilder stringBuilder = new StringBuilder();
-        assertionResultList.forEach(result -> stringBuilder.append(result.getDescription()));
+        assertionResultList.forEach(result -> stringBuilder.append(result.getDescription()).append(System.lineSeparator()));
         return stringBuilder.toString();
     }
 }
