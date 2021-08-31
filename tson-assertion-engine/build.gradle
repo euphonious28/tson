@@ -13,6 +13,16 @@ dependencies {
     implementation project(':tson-interpreter')
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.4'
+}
+
+jar {
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 test {

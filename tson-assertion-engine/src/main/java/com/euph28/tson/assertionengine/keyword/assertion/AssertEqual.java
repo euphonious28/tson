@@ -41,11 +41,12 @@ public class AssertEqual extends AssertionBase {
             // Split into before and after the =
             String path = split(s, '=', true)[0];
             String expectedValue = split(s, '=', true)[1];
+            String actualValue = getValueFromJson(requestData, responseData, path)[0];
 
-            if (path.equals(expectedValue)) {
+            if (actualValue.equals(expectedValue)) {
                 resultPass("Value is equal to path");
             } else {
-                resultFail(String.format("Expected value \"%s\" is not equal to actual value \"%s\"", expectedValue, "???"));
+                resultFail(String.format("Expected value \"%s\" is not equal to actual value \"%s\"", expectedValue, actualValue));
             }
         }
         return true;

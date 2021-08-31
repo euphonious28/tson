@@ -7,6 +7,11 @@ import com.euph28.tson.interpreter.data.RequestData;
 import com.euph28.tson.interpreter.data.ResponseData;
 import com.euph28.tson.interpreter.interpreter.Statement;
 import com.euph28.tson.interpreter.keyword.Keyword;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +63,14 @@ public abstract class AssertionBase extends Keyword {
         assertionResultList.add(new AssertionResult(this, false, description));
     }
 
+    /**
+     * Split a text by delimiter character, respecting quotes
+     *
+     * @param text         Text to be split
+     * @param delimiter    Delimiter to use when splitting
+     * @param removeQuotes Boolean on whether quotes should be removed after splitting
+     * @return Array of String split from the {@code text}
+     */
     protected String[] split(String text, char delimiter, boolean removeQuotes) {
         List<String> result = new ArrayList<>();
 
@@ -101,6 +114,49 @@ public abstract class AssertionBase extends Keyword {
         result.add(currentString.toString());
 
         return result.toArray(new String[0]);
+    }
+
+    /**
+     * Retrieve value from a jsonContent and a jsonPath
+     *
+     * @param requestData  Request data containing request JSON
+     * @param responseData Response data containing response JSON
+     * @param jsonPath     Path to the value. Path is separated by colons (eg: body.item.0.value).
+     *                     Wildcards can be used to retrieve all values in an array
+     * @return Array of values located at the end of the path
+     */
+    protected String[] getValueFromJson(RequestData requestData, ResponseData responseData, String jsonPath) {
+
+        // Retrieve jsonContent (if jsonPath starts with request.xxx, it'll be from request. Otherwise, it's from response)
+        String jsonContent = jsonPath.startsWith("request.") ? requestData.getRequestBody() : responseData.getResponseBody();
+
+        // Trim jsonPath if it starts with request/response
+        jsonPath = jsonPath.startsWith("request.") ? jsonPath.substring("request.".length()) : jsonPath;
+        jsonPath = jsonPath.startsWith("response.") ? jsonPath.substring("response.".length()) : jsonPath;
+
+        // Retrieve value from jsonPath
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            // Convert from String to JSON object
+            JsonNode jsonNode = objectMapper.readTree(jsonContent);
+
+            // Traverse to find value
+            String[] jsonPathSplit = split(jsonPath, '.', true);
+
+            for (String path : jsonPathSplit) {
+                jsonNode = jsonNode.get(path);
+            }
+
+            return new String[]{jsonNode.asText()};
+        } catch (JsonProcessingException e) {
+            Logger logger = LoggerFactory.getLogger(this.getClass());
+            logger.error("Failed to process provided JSON", e);
+        } catch (NullPointerException e) {
+            Logger logger = LoggerFactory.getLogger(this.getClass());
+            logger.error("Failed to resolve the following JSON path: " + jsonPath, e);
+        }
+
+        return new String[]{""};
     }
 
     /* ----- METHODS ------------------------------ */
