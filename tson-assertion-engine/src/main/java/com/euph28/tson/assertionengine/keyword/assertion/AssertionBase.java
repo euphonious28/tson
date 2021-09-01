@@ -14,7 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Base class of an Assertion Keyword
@@ -123,9 +125,9 @@ public abstract class AssertionBase extends Keyword {
      * @param responseData Response data containing response JSON
      * @param jsonPath     Path to the value. Path is separated by colons (eg: body.item.0.value).
      *                     Wildcards can be used to retrieve all values in an array
-     * @return Array of values located at the end of the path
+     * @return Map of path-to-value of resolved values. Returns {@code null} if path was invalid
      */
-    protected String[] getValueFromJson(RequestData requestData, ResponseData responseData, String jsonPath) {
+    protected Map<String, String> getValueFromJson(RequestData requestData, ResponseData responseData, String jsonPath) {
 
         // Retrieve jsonContent (if jsonPath starts with request.xxx, it'll be from request. Otherwise, it's from response)
         String jsonContent = jsonPath.startsWith("request.") ? requestData.getRequestBody() : responseData.getResponseBody();
@@ -136,27 +138,62 @@ public abstract class AssertionBase extends Keyword {
 
         // Retrieve value from jsonPath
         ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, JsonNode> nodeMap = new LinkedHashMap<>();
         try {
-            // Convert from String to JSON object
-            JsonNode jsonNode = objectMapper.readTree(jsonContent);
+            // Convert to map of jsonPath-jsonNode in order to handle splitting from wildcards
+            nodeMap.put("", objectMapper.readTree(jsonContent));
 
-            // Traverse to find value
+            // Generate list of path to traverse
             String[] jsonPathSplit = split(jsonPath, '.', true);
 
+            // Traverse each path
             for (String path : jsonPathSplit) {
-                jsonNode = jsonNode.get(path);
-            }
+                // Updated node map, will replace the original once done updating
+                Map<String, JsonNode> updatedNodeMap = new LinkedHashMap<>();
 
-            return new String[]{jsonNode.asText()};
+                // Traverse each node to traverse each path (handles splitting when wildcard is present)
+                for (String nodeMapKey : nodeMap.keySet()) {
+                    JsonNode jsonNode = nodeMap.get(nodeMapKey);
+
+                    if (path.equals("*") && jsonNode.isArray()) {   // Scenario: Split into individual elements in array if wildcard is used
+                        for (int i = 0; i < jsonNode.size(); i++) {
+                            updatedNodeMap.put(nodeMapKey + "." + i, jsonNode.get(i));
+                        }
+                    } else {                                        // Scenario: Default scenario to just take direct value
+                        updatedNodeMap.put(
+                                nodeMapKey + "." + path,
+                                path.matches("-?\\d+") ? jsonNode.get(Integer.parseInt(path)) : jsonNode.get(path)
+                        );
+                    }
+                }
+                nodeMap = updatedNodeMap;
+            }
         } catch (JsonProcessingException e) {
             Logger logger = LoggerFactory.getLogger(this.getClass());
-            logger.error("Failed to process provided JSON", e);
+            logger.warn("Failed to process provided JSON", e);
+            return null;
         } catch (NullPointerException e) {
             Logger logger = LoggerFactory.getLogger(this.getClass());
-            logger.error("Failed to resolve the following JSON path: " + jsonPath, e);
+            logger.warn("Failed to resolve the following JSON path: " + jsonPath, e);
+            return null;
         }
 
-        return new String[]{""};
+        // Post-processing: Convert to path-value map from path-node map
+        Map<String, String> pathValueResultMap = new LinkedHashMap<>();
+        for (String key : nodeMap.keySet()) {
+            try {
+                pathValueResultMap.put(
+                        key.startsWith(".") ? key.substring(1) : key,
+                        nodeMap.get(key).asText()
+                );
+            } catch (NullPointerException e) {
+                Logger logger = LoggerFactory.getLogger(this.getClass());
+                logger.warn("Failed to resolve the following JSON path: " + jsonPath, e);
+                return null;
+            }
+        }
+
+        return pathValueResultMap;
     }
 
     /* ----- METHODS ------------------------------ */

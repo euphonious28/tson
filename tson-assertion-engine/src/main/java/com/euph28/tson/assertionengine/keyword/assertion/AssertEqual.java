@@ -4,6 +4,8 @@ import com.euph28.tson.assertionengine.TSONAssertionEngine;
 import com.euph28.tson.interpreter.data.RequestData;
 import com.euph28.tson.interpreter.data.ResponseData;
 
+import java.util.Map;
+
 /**
  * Assertion keyword: Equal
  * <p>
@@ -41,12 +43,22 @@ public class AssertEqual extends AssertionBase {
             // Split into before and after the =
             String path = split(s, '=', true)[0];
             String expectedValue = split(s, '=', true)[1];
-            String actualValue = getValueFromJson(requestData, responseData, path)[0];
+            // Map of path-to-actualValue
+            Map<String, String> actualValue = getValueFromJson(requestData, responseData, path);
 
-            if (actualValue.equals(expectedValue)) {
-                resultPass("Value is equal to path");
-            } else {
-                resultFail(String.format("Expected value \"%s\" is not equal to actual value \"%s\"", expectedValue, actualValue));
+            // Error handling: Checking if values failed to be resolved
+            if (actualValue == null) {
+                resultFail("Failed to retrieve values for JSON path: " + path);
+                continue;
+            }
+
+            // Verify for each values
+            for (String key : actualValue.keySet()) {
+                if (actualValue.get(key).equals(expectedValue)) {
+                    resultPass(String.format("Actual value \"%s\" at path \"%s\" is equal to expected", actualValue.get(key), key));
+                } else {
+                    resultFail(String.format("Actual value \"%s\" at path \"%s\" is not equal to expected value \"%s\"", actualValue.get(key), key, expectedValue));
+                }
             }
         }
         return true;
