@@ -6,14 +6,14 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 
 /**
- * Assertion keyword: Equal
+ * Assertion keyword: Regex
  * <p>
- * Compares a path to a value, reporting {@code PASS} if the actual value in the path is equal to the provided value
+ * Compares a path to a regex, reporting {@code PASS} if the actual value in the path matches the provided regex
  */
-public class AssertEqual extends PathValueAssertion {
+public class AssertRegex extends PathValueAssertion {
 
     /* ----- CONSTRUCTOR ------------------------------ */
-    public AssertEqual(TSONAssertionEngine tsonAssertionEngine) {
+    AssertRegex(TSONAssertionEngine tsonAssertionEngine) {
         super(tsonAssertionEngine);
     }
 
@@ -22,13 +22,13 @@ public class AssertEqual extends PathValueAssertion {
     protected String getResultMessage(ResultMessageType resultMessageType, String[] expressionValues, String actualValue, String path) throws ArrayIndexOutOfBoundsException {
         switch (resultMessageType) {
             case RESULT_DEFAULT_PASS:
-                return String.format("Actual value \"%s\" at path \"%s\" (based on \"%s\") is equal to expected", actualValue, path, getPathFromExpression(expressionValues));
+                return String.format("Actual value \"%s\" at path \"%s\" (based on \"%s\") follows the expected regex", actualValue, path, getPathFromExpression(expressionValues));
             case RESULT_DEFAULT_FAIL:
-                return String.format("Actual value \"%s\" at path \"%s\" (based on \"%s\") is not equal to expected value \"%s\"", actualValue, path, getPathFromExpression(expressionValues), expressionValues[1]);
+                return String.format("Actual value \"%s\" at path \"%s\" (based on \"%s\") does not follow the expected regex \"%s\"", actualValue, path, getPathFromExpression(expressionValues), expressionValues[1]);
             case RESULT_COUNT_PASS:
-                return String.format("Count of value \"%s\" at path \"%s\" is equal to expected", actualValue, getPathFromExpression(expressionValues));
+                return String.format("Count of value matching regex \"%s\" at path \"%s\" is equal to expected", actualValue, getPathFromExpression(expressionValues));
             case RESULT_COUNT_FAIL:
-                return String.format("Count of value \"%s\" at path \"%s\" is %s and is not equal to expected range \"%s\"", actualValue, getPathFromExpression(expressionValues), actualValue, expressionValues[2]);
+                return String.format("Count of value matching regex \"%s\" at path \"%s\" is %s and is not equal to expected range \"%s\"", actualValue, getPathFromExpression(expressionValues), actualValue, expressionValues[2]);
             default:
                 LoggerFactory.getLogger(this.getClass()).error("Unknown result message requested for: " + Arrays.toString(expressionValues));
                 return "Unknown result message retrieved";
@@ -52,26 +52,25 @@ public class AssertEqual extends PathValueAssertion {
 
     @Override
     protected boolean checkAssertion(String[] expressionValues, String actualValue, String path) throws ArrayIndexOutOfBoundsException {
-        return expressionValues[1].equals("*") || expressionValues[1].equals(actualValue);
+        return false;
     }
 
     /* ----- OVERRIDE: AssertionBase ------------------------------ */
-
     @Override
     public String getCode() {
-        return "EQUAL";
+        return "REGEX";
     }
 
     @Override
     public String getDescriptionShort() {
-        return "Assert that value is equal";
+        return "Assert that value matches regex";
     }
 
     @Override
     public String getDescriptionLong() {
-        return "Asserts that value located at a JSON path is equal to the provided value.\n"
-                + "Usage\t: <jsonPath>=<expectedValue>\n"
-                + "Example\t: body.item.0.subItem=text\n"
-                + "Note\t: jsonPath supports wildcard (*) for arrays. expectedValue accepts wildcard (*) to accept any value";
+        return "Asserts that value located at a JSON path matches the provided regex.\n"
+                + "Usage\t: <jsonPath>=<expectedRegex>\n"
+                + "Example\t: body.item.0.subItem=regex\n"
+                + "Note\t: jsonPath supports wildcard (*) for arrays. expectedRegex uses a Java regex syntax";
     }
 }

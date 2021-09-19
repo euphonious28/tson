@@ -193,63 +193,6 @@ public abstract class AssertionBase extends Keyword {
         return pathValueResultMap;
     }
 
-    /**
-     * Split a String into individual expressions and handle the expressions. Expressions should be made up of a JSON path
-     * and one or more values, each separated by the same delimiter
-     *
-     * @param requestData             Request data object
-     * @param responseData            Response data object
-     * @param entryDelimiter          Delimiter to be used for splitting the entries
-     * @param expressionDelimiter     Delimiter to be used for splitting individual values within an entry
-     * @param value                   Value/input String to be parsed
-     * @param simpleAssertionProvider Assertion provider that describes how the assertion should be handled
-     */
-    protected void simpleAssertion(RequestData requestData, ResponseData responseData,
-                                   char entryDelimiter, char expressionDelimiter,
-                                   String value, SimpleAssertionProvider simpleAssertionProvider) {
-        // Split into entries
-        String[] values = split(value, entryDelimiter, false);
-
-        for (String s : values) {
-            // Split into before and after operands
-            String[] splitValues = split(s, expressionDelimiter, true);
-            // Retrieve JSON path
-            String path;
-            try {
-                path = simpleAssertionProvider.getPathFromExpression(splitValues);
-            } catch (ArrayIndexOutOfBoundsException e) {
-                Logger logger = LoggerFactory.getLogger(this.getClass());
-                logger.error("Failed to retrieve path from expression array: " + Arrays.toString(splitValues), e);
-                resultFail("Failed to retrieve path for expression: " + s);
-                continue;
-            }
-            // Map of path-to-actualValue
-            Map<String, String> actualValue = getValueFromJson(requestData, responseData, path);
-
-            // Error handling: Checking if values failed to be resolved
-            if (actualValue == null) {
-                resultFail("Failed to retrieve values for JSON path: " + path);
-                continue;
-            }
-
-            // Verify for each values
-            for (String key : actualValue.keySet()) {
-                // Wrap in try/catch in case expression is accessed without handling array index
-                try {
-                    if (simpleAssertionProvider.getAssertionResult(splitValues, actualValue.get(key), key)) {
-                        resultPass(simpleAssertionProvider.getPassMessage(splitValues, actualValue.get(key), key));
-                    } else {
-                        resultFail(simpleAssertionProvider.getFailMessage(splitValues, actualValue.get(key), key));
-                    }
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    Logger logger = LoggerFactory.getLogger(this.getClass());
-                    logger.error("Failed to handle assertion of expression array: " + Arrays.toString(splitValues), e);
-                    resultFail("Failed to assert expression: " + s);
-                }
-            }
-        }
-    }
-
     /* ----- METHODS ------------------------------ */
 
     /**
@@ -292,58 +235,5 @@ public abstract class AssertionBase extends Keyword {
     @Override
     public boolean isAction() {
         return true;
-    }
-
-    /* ----- INTERFACE ------------------------------ */
-
-    /**
-     * Basic assertion provider which describes how a simple assertion should be handled
-     */
-    interface SimpleAssertionProvider {
-
-        /**
-         * Retrieve the JSON path from an array of expression values
-         *
-         * @param expressionValues Array of values that has been retrieved from an expression
-         * @return The JSON path from the {@code expressionValues} that should be used by the assertion
-         * @throws ArrayIndexOutOfBoundsException Throws exception if the index of the expression chosen is invalid
-         */
-        String getPathFromExpression(String[] expressionValues) throws ArrayIndexOutOfBoundsException;
-
-        /**
-         * Handle the assertion based on the provided values
-         *
-         * @param expressionValues Array of values that has been retrieved from an expression
-         * @param actualValue      The actual value that was found at the JSON path within the {@code expressionValues}.
-         *                         The JSON path is retrieved using {@link #getPathFromExpression(String[])}
-         * @param path             Actual path of the {@code actualValue}. This value will be different from the JSON path if wildcards were used
-         * @return Returns {@code true} if the assertion was successful and {@code false} if assertion failed/faced an error
-         * @throws ArrayIndexOutOfBoundsException Throws exception if the index of the expression chosen is invalid
-         */
-        boolean getAssertionResult(String[] expressionValues, String actualValue, String path) throws ArrayIndexOutOfBoundsException;
-
-        /**
-         * Message to be used when the assertion passes
-         *
-         * @param expressionValues Array of values that has been retrieved from an expression
-         * @param actualValue      The actual value that was found at the JSON path within the {@code expressionValues}.
-         *                         The JSON path is retrieved using {@link #getPathFromExpression(String[])}
-         * @param path             Actual path of the {@code actualValue}. This value will be different from the JSON path if wildcards were used
-         * @return Pass message to be used when logging a {@link #resultPass(String)}
-         * @throws ArrayIndexOutOfBoundsException Throws exception if the index of the expression chosen is invalid
-         */
-        String getPassMessage(String[] expressionValues, String actualValue, String path) throws ArrayIndexOutOfBoundsException;
-
-        /**
-         * Message to be used when the assertion fails
-         *
-         * @param expressionValues Array of values that has been retrieved from an expression
-         * @param actualValue      The actual value that was found at the JSON path within the {@code expressionValues}.
-         *                         The JSON path is retrieved using {@link #getPathFromExpression(String[])}
-         * @param path             Actual path of the {@code actualValue}. This value will be different from the JSON path if wildcards were used
-         * @return Failure message to be used when logging a {@link #resultFail(String)}
-         * @throws ArrayIndexOutOfBoundsException Throws exception if the index of the expression chosen is invalid
-         */
-        String getFailMessage(String[] expressionValues, String actualValue, String path) throws ArrayIndexOutOfBoundsException;
     }
 }
