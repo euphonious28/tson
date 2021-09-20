@@ -13,7 +13,7 @@ import java.util.Arrays;
 public class AssertRegex extends PathValueAssertion {
 
     /* ----- CONSTRUCTOR ------------------------------ */
-    AssertRegex(TSONAssertionEngine tsonAssertionEngine) {
+    public AssertRegex(TSONAssertionEngine tsonAssertionEngine) {
         super(tsonAssertionEngine);
     }
 

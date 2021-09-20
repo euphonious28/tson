@@ -1,10 +1,12 @@
 package com.euph28.tson.assertionengine;
 
-import com.euph28.tson.assertionengine.keyword.Assert;
 import com.euph28.tson.assertionengine.keyword.assertion.AssertEqual;
+import com.euph28.tson.assertionengine.keyword.assertion.AssertNotEqual;
+import com.euph28.tson.assertionengine.keyword.assertion.AssertRegex;
 import com.euph28.tson.assertionengine.listener.TSONAssertionEngineListener;
 import com.euph28.tson.assertionengine.result.AssertionReport;
 import com.euph28.tson.assertionengine.result.AssertionResult;
+import com.euph28.tson.assertionengine.keyword.Assert;
 import com.euph28.tson.interpreter.keyword.Keyword;
 import com.euph28.tson.interpreter.keyword.KeywordProvider;
 
@@ -85,6 +87,8 @@ public class TSONAssertionEngine implements KeywordProvider {
         // TODO: Load all classes in package & external jar
         List<Keyword> keywordList = new ArrayList<>();
         keywordList.add(new AssertEqual(this));
+        keywordList.add(new AssertNotEqual(this));
+        keywordList.add(new AssertRegex(this));
         keywordList.add(new Assert(this));
         return keywordList;
     }
