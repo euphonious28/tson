@@ -1,8 +1,6 @@
 package com.euph28.tson.interpreter.keyword;
 
-import com.euph28.tson.interpreter.TSONInterpreter;
-import com.euph28.tson.interpreter.data.RequestData;
-import com.euph28.tson.interpreter.data.ResponseData;
+import com.euph28.tson.interpreter.data.Data;
 
 /**
  * Keyword located within a TSOn file. Keywords mark actions that needs to be processed
@@ -46,13 +44,11 @@ public abstract class Keyword {
     /**
      * Handle the processing of this {@link Keyword}
      *
-     * @param tsonInterpreter TSON Interpreter that has been handling the interpretation
-     * @param requestData     Request data of the last sent request
-     * @param responseData    Response data of the last received response
-     * @param value           Additional value for this {@link Keyword} provided in the TSON file
+     * @param data  Data access class to retrieve current run data
+     * @param value Additional value for this {@link Keyword} provided in the TSON file
      * @return Returns true if handle was successful
      */
-    public abstract boolean handle(TSONInterpreter tsonInterpreter, RequestData requestData, ResponseData responseData, String value);
+    public abstract boolean handle(Data data, String value);
 
     /* ----- OVERRIDE: EQUALS ------------------------------ */
 
