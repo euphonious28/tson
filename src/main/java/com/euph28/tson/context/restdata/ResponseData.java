@@ -1,4 +1,4 @@
-package com.euph28.tson.interpreter.data;
+package com.euph28.tson.context.restdata;
 
 /**
  * Data related to response received from server

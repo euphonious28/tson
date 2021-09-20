@@ -1,7 +1,7 @@
 package com.euph28.tson.assertionengine.keyword;
 
 import com.euph28.tson.assertionengine.TSONAssertionEngine;
-import com.euph28.tson.interpreter.data.Data;
+import com.euph28.tson.context.TSONContext;
 import com.euph28.tson.interpreter.keyword.Keyword;
 
 /**
@@ -50,7 +50,7 @@ public class Assert extends Keyword {
     }
 
     @Override
-    public boolean handle(Data data, String value) {
+    public boolean handle(TSONContext tsonContext, String value) {
         tsonAssertionEngine.publishCurrentAssertionResult();
         tsonAssertionEngine.setCurrentAssertionReportTitle(value);
         return true;

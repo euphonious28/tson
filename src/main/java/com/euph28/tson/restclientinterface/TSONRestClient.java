@@ -1,7 +1,7 @@
 package com.euph28.tson.restclientinterface;
 
-import com.euph28.tson.interpreter.data.RequestData;
-import com.euph28.tson.interpreter.data.ResponseData;
+import com.euph28.tson.context.restdata.RequestData;
+import com.euph28.tson.context.restdata.ResponseData;
 import com.euph28.tson.interpreter.keyword.Keyword;
 import com.euph28.tson.interpreter.keyword.KeywordProvider;
 import com.euph28.tson.interpreter.provider.ContentProvider;

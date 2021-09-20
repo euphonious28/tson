@@ -1,8 +1,8 @@
 package com.euph28.tson.assertionengine.keyword.assertion;
 
 import com.euph28.tson.assertionengine.TSONAssertionEngine;
-import com.euph28.tson.interpreter.data.RequestData;
-import com.euph28.tson.interpreter.data.ResponseData;
+import com.euph28.tson.context.restdata.RequestData;
+import com.euph28.tson.context.restdata.ResponseData;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
