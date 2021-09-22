@@ -1,8 +1,7 @@
 package com.euph28.tson.assertionengine.keyword.assertion;
 
 import com.euph28.tson.assertionengine.TSONAssertionEngine;
-import com.euph28.tson.context.restdata.RequestData;
-import com.euph28.tson.context.restdata.ResponseData;
+import com.euph28.tson.context.TSONContext;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
@@ -132,7 +131,7 @@ public abstract class PathValueAssertion extends AssertionBase {
 
     /* ----- OVERRIDE: ASSERTION BASE ------------------------------ */
     @Override
-    protected boolean handleAssertion(RequestData requestData, ResponseData responseData, String value) {
+    protected boolean handleAssertion(TSONContext tsonContext, String value) {
         // Split into entries
         String[] values = split(value, getEntryDelimiter(), false);
 
@@ -154,7 +153,7 @@ public abstract class PathValueAssertion extends AssertionBase {
             }
 
             // Map of path-to-actualValue
-            Map<String, String> actualValue = getValueFromJson(requestData, responseData, path);
+            Map<String, String> actualValue = getValueFromJson(tsonContext, path);
             // Error handling: Checking if values failed to be resolved
             if (actualValue == null) {
                 resultFail("Failed to retrieve values for JSON path: " + path);

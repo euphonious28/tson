@@ -12,7 +12,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * todo: write doc
+ * Load content value from JSON data. Accepts JSON path in the form of period delimited paths (eg: {@code body.text.item})
+ * and from JSON Pointer (eg: {@code /body/text/item})
  */
 public class JsonValueProvider extends ContentProvider {
 
@@ -54,11 +55,15 @@ public class JsonValueProvider extends ContentProvider {
     }
 
     /**
-     * todo: write doc
+     * Retrieve a map of path-value from JSON content and path
      *
-     * @param tsonContext
-     * @param jsonPath
-     * @return
+     * @param tsonContext Context class that stores the variables related to the current running state
+     * @param jsonPath    Path to the value. Path can be separated by periods (eg: body.item.0.value) or in the
+     *                    form of a JSON Pointer  (eg: {@code /body/item/0/value}).<br/>
+     *                    Wildcards ({@code *}) can be used to retrieve all values in an array. <br/>
+     *                    Starting the jsonPath with "{@code request.}" will result in request JSON being used.
+     *                    Otherwise, response data will be used instead
+     * @return Map of path-to-value of resolved values. Returns {@code null} if path was invalid
      */
     public Map<String, String> getValuesFromJson(TSONContext tsonContext, String jsonPath) {
         // Store original path for logging
@@ -127,11 +132,15 @@ public class JsonValueProvider extends ContentProvider {
     }
 
     /**
-     * todo: write doc
+     * Retrieve a value from JSON content and path
      *
-     * @param tsonContext
-     * @param jsonPath
-     * @return
+     * @param tsonContext Context class that stores the variables related to the current running state
+     * @param jsonPath    Path to the value. Path can be separated by periods (eg: body.item.0.value) or in the
+     *                    form of a JSON Pointer  (eg: {@code /body/item/0/value}).<br/>
+     *                    Path does not accept wildcards <br/>
+     *                    Starting the jsonPath with "{@code request.}" will result in request JSON being used.
+     *                    Otherwise, response data will be used instead
+     * @return Value located at path. Returns an empty String if path is invalid
      */
     public String getValueFromJson(TSONContext tsonContext, String jsonPath) {
         // Store original path for logging
@@ -156,7 +165,7 @@ public class JsonValueProvider extends ContentProvider {
         }
     }
 
-    /* ----- METHODS: CONTENT PROVIDER ------------------------------ */
+    /* ----- OVERRIDE: CONTENT PROVIDER ------------------------------ */
     @Override
     public String getPrefix() {
         return "json";

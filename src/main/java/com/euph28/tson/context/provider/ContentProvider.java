@@ -20,7 +20,7 @@ public abstract class ContentProvider {
      *
      * @param tsonContext TSON context that called for this provider
      * @param key         Key for the content to be retrieved
-     * @return Content that should replace the key
+     * @return Content that should replace the key. This should return an empty String if key is invalid
      */
     public abstract String getContent(TSONContext tsonContext, String key);
 }

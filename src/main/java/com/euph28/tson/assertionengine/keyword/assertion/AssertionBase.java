@@ -3,15 +3,9 @@ package com.euph28.tson.assertionengine.keyword.assertion;
 import com.euph28.tson.assertionengine.TSONAssertionEngine;
 import com.euph28.tson.assertionengine.result.AssertionResult;
 import com.euph28.tson.context.TSONContext;
-import com.euph28.tson.context.restdata.RequestData;
-import com.euph28.tson.context.restdata.ResponseData;
+import com.euph28.tson.context.provider.JsonValueProvider;
 import com.euph28.tson.interpreter.interpreter.Statement;
 import com.euph28.tson.interpreter.keyword.Keyword;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -118,79 +112,14 @@ public abstract class AssertionBase extends Keyword {
     /**
      * Retrieve value from a jsonContent and a jsonPath
      *
-     * @param requestData  Request data containing request JSON
-     * @param responseData Response data containing response JSON
+     * @param tsonContext  Context class that stores the variables related to the current running state
      * @param jsonPath     Path to the value. Path is separated by colons (eg: body.item.0.value).
      *                     Wildcards can be used to retrieve all values in an array
      * @return Map of path-to-value of resolved values. Returns {@code null} if path was invalid
      */
-    protected Map<String, String> getValueFromJson(RequestData requestData, ResponseData responseData, String jsonPath) {
-
-        // Retrieve jsonContent (if jsonPath starts with request.xxx, it'll be from request. Otherwise, it's from response)
-        String jsonContent = jsonPath.startsWith("request.") ? requestData.getRequestBody() : responseData.getResponseBody();
-
-        // Trim jsonPath if it starts with request/response
-        jsonPath = jsonPath.startsWith("request.") ? jsonPath.substring("request.".length()) : jsonPath;
-        jsonPath = jsonPath.startsWith("response.") ? jsonPath.substring("response.".length()) : jsonPath;
-
-        // Retrieve value from jsonPath
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, JsonNode> nodeMap = new LinkedHashMap<>();
-        try {
-            // Convert to map of jsonPath-jsonNode in order to handle splitting from wildcards
-            nodeMap.put("", objectMapper.readTree(jsonContent));
-
-            // Generate list of path to traverse
-            String[] jsonPathSplit = split(jsonPath, '.', true);
-
-            // Traverse each path
-            for (String path : jsonPathSplit) {
-                // Updated node map, will replace the original once done updating
-                Map<String, JsonNode> updatedNodeMap = new LinkedHashMap<>();
-
-                // Traverse each node to traverse each path (handles splitting when wildcard is present)
-                for (String nodeMapKey : nodeMap.keySet()) {
-                    JsonNode jsonNode = nodeMap.get(nodeMapKey);
-
-                    if (path.equals("*") && jsonNode.isArray()) {   // Scenario: Split into individual elements in array if wildcard is used
-                        for (int i = 0; i < jsonNode.size(); i++) {
-                            updatedNodeMap.put(nodeMapKey + "." + i, jsonNode.get(i));
-                        }
-                    } else {                                        // Scenario: Default scenario to just take direct value
-                        updatedNodeMap.put(
-                                nodeMapKey + "." + path,
-                                path.matches("-?\\d+") ? jsonNode.get(Integer.parseInt(path)) : jsonNode.get(path)
-                        );
-                    }
-                }
-                nodeMap = updatedNodeMap;
-            }
-        } catch (JsonProcessingException e) {
-            Logger logger = LoggerFactory.getLogger(this.getClass());
-            logger.error("Failed to process provided JSON", e);
-            return null;
-        } catch (NullPointerException e) {
-            Logger logger = LoggerFactory.getLogger(this.getClass());
-            logger.error("Failed to resolve the following JSON path: " + jsonPath, e);
-            return null;
-        }
-
-        // Post-processing: Convert to path-value map from path-node map
-        Map<String, String> pathValueResultMap = new LinkedHashMap<>();
-        for (String key : nodeMap.keySet()) {
-            try {
-                pathValueResultMap.put(
-                        key.startsWith(".") ? key.substring(1) : key,
-                        nodeMap.get(key).asText()
-                );
-            } catch (NullPointerException e) {
-                Logger logger = LoggerFactory.getLogger(this.getClass());
-                logger.error("Failed to resolve the following JSON path: " + jsonPath, e);
-                return null;
-            }
-        }
-
-        return pathValueResultMap;
+    protected Map<String, String> getValueFromJson(TSONContext tsonContext, String jsonPath) {
+        JsonValueProvider jsonValueProvider = new JsonValueProvider();
+        return jsonValueProvider.getValuesFromJson(tsonContext, jsonPath);
     }
 
     /* ----- METHODS ------------------------------ */
@@ -199,17 +128,16 @@ public abstract class AssertionBase extends Keyword {
      * Handle the assertion based on the provided data. Use {@link #resultPass(String)} and {@link #resultFail(String)}
      * to report assertion results
      *
-     * @param requestData  Request data of the last sent request
-     * @param responseData Response data of the last received response
+     * @param tsonContext  Context class that stores the variables related to the current running state
      * @param value        Additional value for this {@link Keyword} provided in the TSON file
      * @return Returns true if handle was successful
      */
-    protected abstract boolean handleAssertion(RequestData requestData, ResponseData responseData, String value);
+    protected abstract boolean handleAssertion(TSONContext tsonContext, String value);
 
     /* ----- OVERRIDE: KEYWORD BASE ------------------------------ */
 
     /**
-     * Calls {@link #handleAssertion(RequestData, ResponseData, String)} and returns results to {@link #tsonAssertionEngine}. <br/>
+     * Calls {@link #handleAssertion(TSONContext, String)} and returns results to {@link #tsonAssertionEngine}. <br/>
      * Do not override unless you plan to alter how data is returned to {@link #tsonAssertionEngine}
      */
     @Override
@@ -218,7 +146,7 @@ public abstract class AssertionBase extends Keyword {
         assertionResultList.clear();
 
         // Perform assertion (and populate assertionResultList)
-        boolean status = handleAssertion(tsonContext.getRequestData(), tsonContext.getResponseData(), value);
+        boolean status = handleAssertion(tsonContext, value);
 
         // Report result to AssertionEngine
         tsonAssertionEngine.addAssertionResult(assertionResultList);
