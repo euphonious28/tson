@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Content provider that stores and returns values similar to a key-value map
  */
-public class StringMapProvider extends ContentProvider {
+public class StringMapProvider implements ContentProvider {
     /* ----- VARIABLES ------------------------------ */
     Logger logger = LoggerFactory.getLogger(StringMapProvider.class);
 

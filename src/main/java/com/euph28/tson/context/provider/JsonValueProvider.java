@@ -15,7 +15,7 @@ import java.util.Map;
  * Load content value from JSON data. Accepts JSON path in the form of period delimited paths (eg: {@code body.text.item})
  * and from JSON Pointer (eg: {@code /body/text/item})
  */
-public class JsonValueProvider extends ContentProvider {
+public class JsonValueProvider implements ContentProvider {
 
     /* ----- VARIABLES ------------------------------ */
     Logger logger = LoggerFactory.getLogger(JsonValueProvider.class);

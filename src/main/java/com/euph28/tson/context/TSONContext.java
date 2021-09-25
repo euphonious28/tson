@@ -6,6 +6,8 @@ import com.euph28.tson.context.provider.StringMapProvider;
 import com.euph28.tson.context.restdata.RequestData;
 import com.euph28.tson.context.restdata.ResponseData;
 import com.euph28.tson.interpreter.TSONInterpreter;
+import com.euph28.tson.interpreter.keyword.Keyword;
+import com.euph28.tson.interpreter.keyword.KeywordProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +19,11 @@ import java.util.Map;
 /**
  * Context class that stores all variables related to the current state
  */
-public class TSONContext {
+public class TSONContext implements KeywordProvider {
+    /* ----- CONSTANTS ------------------------------ */
+    final static String CONTENT_TAG_START = "${";
+    final static String CONTENT_TAG_END = "}";
+
     /* ----- VARIABLES ------------------------------ */
     Logger logger = LoggerFactory.getLogger(TSONContext.class);
 
@@ -93,13 +99,10 @@ public class TSONContext {
      * Items that fail to resolve will be returned without tag symbols
      */
     public String resolveContent(String text) {
-        String tagStart = "${";
-        String tagEnd = "}";
-
         // Keep resolving until there is no more content tag
-        int startIndex = text.lastIndexOf(tagStart);
+        int startIndex = text.lastIndexOf(CONTENT_TAG_START);
         while (startIndex >= 0) {
-            int endIndex = text.indexOf(tagEnd, startIndex + 2);
+            int endIndex = text.indexOf(CONTENT_TAG_END, startIndex + 2);
 
             String contentText = text.substring(startIndex + 2, endIndex);
             String resolvedText = getContent(contentText);
@@ -108,7 +111,7 @@ public class TSONContext {
                     + (resolvedText.isEmpty() ? contentText : resolvedText)
                     + text.substring(endIndex + 1);
 
-            startIndex = text.lastIndexOf(tagStart);
+            startIndex = text.lastIndexOf(CONTENT_TAG_START);
         }
 
         return text;
@@ -173,5 +176,11 @@ public class TSONContext {
 
     public void setTsonInterpreter(TSONInterpreter tsonInterpreter) {
         this.tsonInterpreter = tsonInterpreter;
+    }
+
+    /* ----- OVERRIDE: KEYWORD PROVIDER ------------------------------ */
+    @Override
+    public List<Keyword> getKeywordList() {
+        return null;
     }
 }
