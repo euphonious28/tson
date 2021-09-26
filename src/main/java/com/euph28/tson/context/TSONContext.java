@@ -1,5 +1,9 @@
 package com.euph28.tson.context;
 
+import com.euph28.tson.context.keyword.PropertyDescription;
+import com.euph28.tson.context.keyword.PropertyId;
+import com.euph28.tson.context.keyword.RequestVariable;
+import com.euph28.tson.context.keyword.ResponseVariable;
 import com.euph28.tson.context.provider.ContentProvider;
 import com.euph28.tson.context.provider.JsonValueProvider;
 import com.euph28.tson.context.provider.StringMapProvider;
@@ -52,6 +56,11 @@ public class TSONContext implements KeywordProvider {
      */
     List<ContentProvider> contentProviderList = new ArrayList<>();
 
+    /**
+     * List of provided keywords
+     */
+    List<Keyword> keywordList = new ArrayList<>();
+
     /* ----- CONSTRUCTOR ------------------------------ */
     public TSONContext() {
         // Initialize default providers
@@ -64,6 +73,12 @@ public class TSONContext implements KeywordProvider {
         StringMapProvider providerProperty = new StringMapProvider(VariableType.PROPERTY.prefix);
         contentProviderList.add(providerProperty);
         variablesMap.put(VariableType.PROPERTY, providerProperty);
+
+        // Initialize keywords
+        keywordList.add(new RequestVariable());
+        keywordList.add(new ResponseVariable());
+        keywordList.add(new PropertyId());
+        keywordList.add(new PropertyDescription());
     }
 
     /* ----- METHODS: VARIABLES ------------------------------ */
