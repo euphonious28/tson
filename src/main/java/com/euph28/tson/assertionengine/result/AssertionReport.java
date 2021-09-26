@@ -37,6 +37,7 @@ public class AssertionReport {
      * @param resultList List of results to initialize the report with
      */
     public AssertionReport(List<AssertionResult> resultList) {
+        this();
         addResults(resultList);
     }
 
@@ -44,7 +45,7 @@ public class AssertionReport {
      * Report containing a collection of {@link AssertionResult}
      */
     public AssertionReport() {
-
+        reportTitle = "";
     }
 
     /* ----- METHODS: INTERNAL ------------------------------ */
