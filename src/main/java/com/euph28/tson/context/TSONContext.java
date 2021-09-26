@@ -12,6 +12,7 @@ import com.euph28.tson.context.restdata.ResponseData;
 import com.euph28.tson.interpreter.TSONInterpreter;
 import com.euph28.tson.interpreter.keyword.Keyword;
 import com.euph28.tson.interpreter.keyword.KeywordProvider;
+import com.euph28.tson.restclientinterface.TSONRestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,19 +33,14 @@ public class TSONContext implements KeywordProvider {
     Logger logger = LoggerFactory.getLogger(TSONContext.class);
 
     /**
-     * Data of the last sent request
-     */
-    RequestData requestData;
-
-    /**
-     * Data of the last received response
-     */
-    ResponseData responseData;
-
-    /**
      * Current TSON Interpreter
      */
     TSONInterpreter tsonInterpreter;
+
+    /**
+     * TSON Rest client that handles send and receive data
+     */
+    TSONRestClient tsonRestClient;
 
     /**
      * Map of {@link StringMapProvider}
@@ -64,14 +60,14 @@ public class TSONContext implements KeywordProvider {
     /* ----- CONSTRUCTOR ------------------------------ */
     public TSONContext() {
         // Initialize default providers
-        contentProviderList.add(new JsonValueProvider());
+        addContentProvider(new JsonValueProvider());
 
         StringMapProvider providerVariable = new StringMapProvider(VariableType.VARIABLE.prefix);
-        contentProviderList.add(providerVariable);
+        addContentProvider(providerVariable);
         variablesMap.put(VariableType.VARIABLE, providerVariable);
 
         StringMapProvider providerProperty = new StringMapProvider(VariableType.PROPERTY.prefix);
-        contentProviderList.add(providerProperty);
+        addContentProvider(providerProperty);
         variablesMap.put(VariableType.PROPERTY, providerProperty);
 
         // Initialize keywords
@@ -79,6 +75,12 @@ public class TSONContext implements KeywordProvider {
         keywordList.add(new ResponseVariable());
         keywordList.add(new PropertyId());
         keywordList.add(new PropertyDescription());
+    }
+
+    public TSONContext(TSONInterpreter tsonInterpreter, TSONRestClient tsonRestClient) {
+        this();
+        this.tsonInterpreter = tsonInterpreter;
+        this.tsonRestClient = tsonRestClient;
     }
 
     /* ----- METHODS: VARIABLES ------------------------------ */
@@ -170,19 +172,11 @@ public class TSONContext implements KeywordProvider {
     /* ----- GETTERS & SETTERS: REQUEST, RESPONSE, INTERPRETER ------------------------------ */
 
     public RequestData getRequestData() {
-        return requestData;
-    }
-
-    public void setRequestData(RequestData requestData) {
-        this.requestData = requestData;
+        return tsonRestClient.getRequestData();
     }
 
     public ResponseData getResponseData() {
-        return responseData;
-    }
-
-    public void setResponseData(ResponseData responseData) {
-        this.responseData = responseData;
+        return tsonRestClient.getResponseData();
     }
 
     public TSONInterpreter getTsonInterpreter() {
@@ -193,9 +187,13 @@ public class TSONContext implements KeywordProvider {
         this.tsonInterpreter = tsonInterpreter;
     }
 
+    public void setTsonRestClient(TSONRestClient tsonRestClient) {
+        this.tsonRestClient = tsonRestClient;
+    }
+
     /* ----- OVERRIDE: KEYWORD PROVIDER ------------------------------ */
     @Override
     public List<Keyword> getKeywordList() {
-        return null;
+        return keywordList;
     }
 }
