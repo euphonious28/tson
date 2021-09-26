@@ -165,8 +165,8 @@ public class TSONContext implements KeywordProvider {
             return "";
         }
 
-        // Retrieve from provider and return
-        return contentProvider.getContent(this, text);
+        // Retrieve from provider and return (remove the prefix + .)
+        return contentProvider.getContent(this, text.substring(contentProvider.getPrefix().length() + 1));
     }
 
     /* ----- GETTERS & SETTERS: REQUEST, RESPONSE, INTERPRETER ------------------------------ */

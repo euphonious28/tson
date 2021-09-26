@@ -178,6 +178,6 @@ public class JsonValueProvider implements ContentProvider {
 
     @Override
     public String getContent(TSONContext tsonContext, String key) {
-        return null;
+        return getValueFromJson(tsonContext, key);
     }
 }

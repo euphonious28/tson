@@ -56,7 +56,7 @@ public class RequestVariable extends Keyword {
             }
 
             // Retrieve JSON path
-            String pathValue = tsonContext.getContent("json.req." + splitValues[1]);
+            String pathValue = tsonContext.getContent("json.request." + splitValues[1]);
 
             // Error check: invalid value
             if (pathValue.isEmpty()) {
