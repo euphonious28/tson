@@ -65,7 +65,7 @@ public class ResponseVariable extends Keyword {
             }
 
             // Store value
-            tsonContext.addVariable(VariableType.VARIABLE, values[0], pathValue);
+            tsonContext.addVariable(VariableType.VARIABLE, splitValues[0], pathValue);
             logger.trace(String.format("Stored response variable with key \"%s\" and value \"%s\"", values[0], pathValue));
         }
         return true;
