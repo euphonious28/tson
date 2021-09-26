@@ -85,6 +85,11 @@ public class JsonValueProvider implements ContentProvider {
 
             // Traverse each path and update node
             for (String path : jsonPathSplit) {
+                // Skip if empty (needed for first index due to path starting with "/", keeping it in case of human error)
+                if(path.isEmpty()) {
+                    continue;
+                }
+
                 // Updated node map, will replace the original at end of each iteration
                 Map<String, JsonNode> updatedNodeMap = new LinkedHashMap<>();
 
