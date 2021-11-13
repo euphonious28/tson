@@ -29,7 +29,7 @@ jobs:
     if: github.event_name == 'push'
     outputs:
       Version: ${{ steps.gitversion.outputs.majorMinorPatch }}
-      VersionLong: ${{ steps.gitversion.outputs.nuGetVersionV2 }}
+      VersionLong: ${{ steps.gitversion.outputs.semVer }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -44,7 +44,7 @@ jobs:
       - name: GitVersion > Log output
         run: |
           echo "MajorMinorPatch: ${{ steps.gitversion.outputs.majorMinorPatch }}"
-          echo "NuGetVersionV2: ${{ steps.gitversion.outputs.nuGetVersionV2 }}"
+          echo "SemVer: ${{ steps.gitversion.outputs.semVer }}"
 
   publish:
     runs-on: ubuntu-latest
