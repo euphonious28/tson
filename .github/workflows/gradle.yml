@@ -25,7 +25,7 @@ jobs:
 
   version:
     runs-on: ubuntu-latest
-    needs: builds
+    needs: build
     outputs:
       Version: ${{ steps.gitversion.outputs.nuGetVersionV2 }}
     steps:
@@ -46,7 +46,7 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
-    needs: [builds, version]
+    needs: [build, version]
     if: github.ref == 'refs/head/master'
     permissions:
       contents: read
@@ -61,15 +61,15 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
-    - name: Publish to GitHub Packages
-      run: gradle -Pversion=${{ needs.builds.outputs.Version }} publish
-      env:
-        GITHUB_ACTOR: ${{ github.actor }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Create Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ needs.build.outputs.Version }}
-        release_name: Release ${{ needs.build.outputs.Version }}
+      - name: Publish to GitHub Packages
+        run: gradle -Pversion=${{ needs.builds.outputs.Version }} publish
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ needs.build.outputs.Version }}
+          release_name: Release ${{ needs.build.outputs.Version }}
