@@ -7,8 +7,8 @@ import com.euph28.tson.assertionengine.listener.TSONAssertionEngineListener;
 import com.euph28.tson.assertionengine.result.AssertionReport;
 import com.euph28.tson.assertionengine.result.AssertionResult;
 import com.euph28.tson.assertionengine.keyword.Assert;
-import com.euph28.tson.interpreter.keyword.Keyword;
-import com.euph28.tson.interpreter.keyword.KeywordProvider;
+import com.euph28.tson.core.keyword.Keyword;
+import com.euph28.tson.core.keyword.KeywordProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;

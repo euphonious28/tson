@@ -2,9 +2,9 @@ package com.euph28.tson.restclientinterface;
 
 import com.euph28.tson.context.restdata.RequestData;
 import com.euph28.tson.context.restdata.ResponseData;
-import com.euph28.tson.interpreter.keyword.Keyword;
-import com.euph28.tson.interpreter.keyword.KeywordProvider;
-import com.euph28.tson.interpreter.provider.ContentProvider;
+import com.euph28.tson.core.keyword.Keyword;
+import com.euph28.tson.core.keyword.KeywordProvider;
+import com.euph28.tson.core.provider.ContentProvider;
 import com.euph28.tson.restclientinterface.keyword.KeywordSend;
 import com.euph28.tson.restclientinterface.listener.TSONRestClientListener;
 import org.slf4j.Logger;

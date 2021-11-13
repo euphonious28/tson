@@ -4,8 +4,8 @@ import com.euph28.tson.assertionengine.TSONAssertionEngine;
 import com.euph28.tson.assertionengine.result.AssertionResult;
 import com.euph28.tson.context.TSONContext;
 import com.euph28.tson.context.provider.JsonValueProvider;
-import com.euph28.tson.interpreter.interpreter.Statement;
-import com.euph28.tson.interpreter.keyword.Keyword;
+import com.euph28.tson.interpreter.Statement;
+import com.euph28.tson.core.keyword.Keyword;
 
 import java.util.*;
 

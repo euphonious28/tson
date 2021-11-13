@@ -1,10 +1,8 @@
 package com.euph28.tson.interpreter;
 
-import com.euph28.tson.interpreter.interpreter.Interpretation;
-import com.euph28.tson.interpreter.interpreter.Statement;
-import com.euph28.tson.interpreter.keyword.Keyword;
-import com.euph28.tson.interpreter.keyword.KeywordProvider;
-import com.euph28.tson.interpreter.provider.ContentProvider;
+import com.euph28.tson.core.keyword.Keyword;
+import com.euph28.tson.core.keyword.KeywordProvider;
+import com.euph28.tson.core.provider.ContentProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

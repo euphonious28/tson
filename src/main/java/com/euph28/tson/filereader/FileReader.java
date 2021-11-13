@@ -1,6 +1,6 @@
 package com.euph28.tson.filereader;
 
-import com.euph28.tson.interpreter.provider.ContentProvider;
+import com.euph28.tson.core.provider.ContentProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

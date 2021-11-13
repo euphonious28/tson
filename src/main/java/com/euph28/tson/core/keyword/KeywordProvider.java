@@ -1,4 +1,4 @@
-package com.euph28.tson.interpreter.keyword;
+package com.euph28.tson.core.keyword;
 
 import java.util.List;
 

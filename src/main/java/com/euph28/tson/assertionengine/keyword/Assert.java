@@ -2,7 +2,7 @@ package com.euph28.tson.assertionengine.keyword;
 
 import com.euph28.tson.assertionengine.TSONAssertionEngine;
 import com.euph28.tson.context.TSONContext;
-import com.euph28.tson.interpreter.keyword.Keyword;
+import com.euph28.tson.core.keyword.Keyword;
 
 /**
  * Keyword: Assert

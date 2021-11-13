@@ -1,6 +1,6 @@
 package com.euph28.tson.restclientinterface.keyword;
 
-import com.euph28.tson.interpreter.keyword.Keyword;
+import com.euph28.tson.core.keyword.Keyword;
 import com.euph28.tson.restclientinterface.TSONRestClient;
 
 /**

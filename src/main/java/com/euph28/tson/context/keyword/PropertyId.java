@@ -2,7 +2,7 @@ package com.euph28.tson.context.keyword;
 
 import com.euph28.tson.context.TSONContext;
 import com.euph28.tson.context.VariableType;
-import com.euph28.tson.interpreter.keyword.Keyword;
+import com.euph28.tson.core.keyword.Keyword;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
