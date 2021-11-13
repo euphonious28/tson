@@ -26,6 +26,7 @@ jobs:
   version:
     runs-on: ubuntu-latest
     needs: build
+    if: github.event_name == 'push'
     outputs:
       Version: ${{ steps.gitversion.outputs.majorMinorPatch }}
       VersionLong: ${{ steps.gitversion.outputs.nuGetVersionV2 }}
@@ -48,6 +49,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     needs: [build, version]
+    if: github.event_name == 'push'
     permissions:
       contents: read
       packages: write
