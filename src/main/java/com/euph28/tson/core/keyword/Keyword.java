@@ -103,10 +103,11 @@ public abstract class Keyword {
      * Handle the processing of this {@link Keyword}
      *
      * @param tsonContext  Context class that stores the variables related to the current running state
+     * @param tsonReporter Reporter class to report execution result to
      * @param value Additional value for this {@link Keyword} provided in the TSON file
      * @return Returns true if handle was successful
      */
-    public abstract boolean handle(TSONContext tsonContext, String value);
+    public abstract boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, String value);
 
     /* ----- OVERRIDE: EQUALS ------------------------------ */
 

@@ -3,6 +3,7 @@ package com.euph28.tson.context.keyword;
 import com.euph28.tson.context.TSONContext;
 import com.euph28.tson.context.VariableType;
 import com.euph28.tson.core.keyword.Keyword;
+import com.euph28.tson.reporter.TSONReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +38,7 @@ public class PropertyId extends Keyword {
     }
 
     @Override
-    public boolean handle(TSONContext tsonContext, String value) {
+    public boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, String value) {
         tsonContext.addVariable(VariableType.PROPERTY, "id", value);
         return true;
     }
