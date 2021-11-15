@@ -7,32 +7,49 @@ public enum ReportType {
 
     /* ----- ENUM TYPES ------------------------------ */
     /**
-     * Lowest importance report for indicating an event has happened normally
+     * Lowest importance report. Reports of this level is hidden by default and is only used for debugging
      */
-    INFO,
+    TRACE(-1),
+
+    /**
+     * Low importance report for indicating an event has happened normally
+     */
+    INFO(0),
 
     /**
      * Warning report for indicating an event that did not occur normally but has no impact
      */
-    WARN,
+    WARN(10),
 
     /**
      * Error report for indicating an event that did not occur normally and could/will have an impact
      */
-    ERROR,
+    ERROR(11),
 
     /**
      * Critical error report for indicating an event that did not occur normally and will have a breaking impact
      */
-    CRITICAL,
+    CRITICAL(12),
 
     /**
      * Report that test passed
      */
-    PASS,
+    PASS(1),
 
     /**
      * Report that test failed
      */
-    FAIL
+    FAIL(20);
+
+    /* ----- VARIABLES ------------------------------ */
+    /**
+     * Severity level of the report type, higher value means the item is more severe (and should override the lower
+     * severity levels if they are to be merged)
+     */
+    int severity;
+
+    /* ----- CONSTRUCTOR ------------------------------ */
+    ReportType(int severity) {
+        this.severity = severity;
+    }
 }
