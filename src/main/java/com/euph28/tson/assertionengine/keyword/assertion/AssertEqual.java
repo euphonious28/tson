@@ -19,7 +19,13 @@ public class AssertEqual extends PathValueAssertion {
 
     /* ----- OVERRIDE: PathValueAssertion ------------------------------ */
     @Override
-    protected String getResultMessage(ResultMessageType resultMessageType, String[] expressionValues, String actualValue, String path) throws ArrayIndexOutOfBoundsException {
+    protected String getStepDescription(String[] expressionValues) throws ArrayIndexOutOfBoundsException {
+        // TODO: Fill this in
+        return "--not implemented--";
+    }
+
+    @Override
+    protected String getResultDescription(ResultMessageType resultMessageType, String[] expressionValues, String actualValue, String path) throws ArrayIndexOutOfBoundsException {
         switch (resultMessageType) {
             case RESULT_DEFAULT_PASS:
                 return String.format("Actual value \"%s\" at path \"%s\" (based on \"%s\") is equal to expected", actualValue, path, getPathFromExpression(expressionValues));

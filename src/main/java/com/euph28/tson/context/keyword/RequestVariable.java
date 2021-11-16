@@ -3,6 +3,7 @@ package com.euph28.tson.context.keyword;
 import com.euph28.tson.context.TSONContext;
 import com.euph28.tson.context.VariableType;
 import com.euph28.tson.core.keyword.Keyword;
+import com.euph28.tson.reporter.ReportType;
 import com.euph28.tson.reporter.TSONReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +69,11 @@ public class RequestVariable extends Keyword {
             // Store value
             tsonContext.addVariable(VariableType.VARIABLE, splitValues[0], pathValue);
             logger.trace(String.format("Stored request variable with key \"%s\" and value \"%s\"", values[0], pathValue));
+            tsonReporter.doReport(
+                    ReportType.INFO,
+                    String.format("Store variable \"%s\" with request value at path \"%s\"", splitValues[0], splitValues[1]),
+                    "Value at path is: " + pathValue
+            );
         }
         return true;
     }

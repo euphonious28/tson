@@ -75,10 +75,21 @@ public abstract class PathValueAssertion extends AssertionBase {
         return false;
     }
 
+
     /* ----- ABSTRACT METHODS ------------------------------ */
 
     /**
-     * Retrieve the message to be used when reporting assertion result
+     * Description of the assertion step that was taken. The step is independent of the result and is used for
+     * manual reproduction of the step
+     *
+     * @param expressionValues Array of values that has been retrieved from an expression
+     * @return Description of the assertion step that was taken
+     */
+    protected abstract String getStepDescription(String[] expressionValues) throws ArrayIndexOutOfBoundsException;
+
+    /**
+     * Retrieve the message to be used when reporting assertion result. This should explain the actual value and
+     * its accuracy to the expected value
      *
      * @param resultMessageType Type of result that this message is intended for
      * @param expressionValues  Array of values that has been retrieved from an expression
@@ -86,10 +97,10 @@ public abstract class PathValueAssertion extends AssertionBase {
      *                          The JSON path is retrieved using {@link #getPathFromExpression(String[])}
      * @param path              Actual path of the {@code actualValue}. This value will be different from the JSON path
      *                          if wildcards were used
-     * @return Message to be used when logging result based on the result type
+     * @return Message to be used when reporting assertion result
      * @throws ArrayIndexOutOfBoundsException Throws exception if the index of the expression chosen is invalid
      */
-    protected abstract String getResultMessage(ResultMessageType resultMessageType, String[] expressionValues, String actualValue, String path)
+    protected abstract String getResultDescription(ResultMessageType resultMessageType, String[] expressionValues, String actualValue, String path)
             throws ArrayIndexOutOfBoundsException;
 
     /**
@@ -148,7 +159,8 @@ public abstract class PathValueAssertion extends AssertionBase {
                 path = getPathFromExpression(splitValues);
             } catch (ArrayIndexOutOfBoundsException e) {
                 LoggerFactory.getLogger(this.getClass()).error("Failed to retrieve path from expression array: " + Arrays.toString(splitValues), e);
-                resultFail("Failed to retrieve path for expression: " + entry);
+                // TODO: Wrap this in another(?) try-catch
+                resultFail("Failed to assert expression", "Failed to retrieve path for expression: " + entry);
                 continue;
             }
 
@@ -156,7 +168,8 @@ public abstract class PathValueAssertion extends AssertionBase {
             Map<String, String> actualValue = getValueFromJson(tsonContext, path);
             // Error handling: Checking if values failed to be resolved
             if (actualValue == null) {
-                resultFail("Failed to retrieve values for JSON path: " + path);
+                // TODO: Wrap this in another(?) try-catch
+                resultFail("Failed to assert expression", "Failed to retrieve values for JSON path: " + path);
                 continue;
             }
 
@@ -167,13 +180,19 @@ public abstract class PathValueAssertion extends AssertionBase {
                         // Wrap in try/catch in case expression is accessed without handling array index
                         try {
                             if (checkAssertion(splitValues, actualValue.get(key), key)) {
-                                resultPass(getResultMessage(ResultMessageType.RESULT_DEFAULT_PASS, splitValues, actualValue.get(key), key));
+                                resultPass(
+                                        getStepDescription(splitValues),
+                                        getResultDescription(ResultMessageType.RESULT_DEFAULT_PASS, splitValues, actualValue.get(key), key)
+                                );
                             } else {
-                                resultFail(getResultMessage(ResultMessageType.RESULT_DEFAULT_FAIL, splitValues, actualValue.get(key), key));
+                                resultFail(
+                                        getStepDescription(splitValues),
+                                        getResultDescription(ResultMessageType.RESULT_DEFAULT_FAIL, splitValues, actualValue.get(key), key)
+                                );
                             }
                         } catch (ArrayIndexOutOfBoundsException e) {
                             LoggerFactory.getLogger(this.getClass()).error(String.format("Failed to handle assertion of expression \"%s\" for path \"%s\"", entry, key), e);
-                            resultFail(String.format("Failed to assert expression \"%s\" for path \"%s\"", entry, key));
+                            resultFail("Failed to assert expression", String.format("Failed to assert expression \"%s\" for path \"%s\"", entry, key));
                         }
                     }
                     break;
@@ -189,19 +208,25 @@ public abstract class PathValueAssertion extends AssertionBase {
                             }
                         } catch (ArrayIndexOutOfBoundsException e) {
                             LoggerFactory.getLogger(this.getClass()).error(String.format("Failed to handle assertion of expression \"%s\" for path \"%s\"", entry, key), e);
-                            resultFail(String.format("Failed to assert expression \"%s\" for path \"%s\"", entry, key));
+                            resultFail("Failed to assert expression", String.format("Failed to assert expression \"%s\" for path \"%s\"", entry, key));
                         }
                     }
 
                     // Assert result based on count
                     if (checkIntegerValue(splitValues[2], count)) {
-                        resultPass(getResultMessage(ResultMessageType.RESULT_COUNT_PASS, splitValues, String.valueOf(count), path));
+                        resultPass(
+                                getStepDescription(splitValues),
+                                getResultDescription(ResultMessageType.RESULT_COUNT_PASS, splitValues, String.valueOf(count), path)
+                        );
                     } else {
-                        resultFail(getResultMessage(ResultMessageType.RESULT_COUNT_FAIL, splitValues, String.valueOf(count), path));
+                        resultFail(
+                                getStepDescription(splitValues),
+                                getResultDescription(ResultMessageType.RESULT_COUNT_FAIL, splitValues, String.valueOf(count), path)
+                        );
                     }
                     break;
                 default:
-                    resultFail("Failed to assert expression due to invalid ");
+                    resultFail("Failed to assert expression", "Failed to assert expression due to invalid format");
             }
         }
         return true;
@@ -210,7 +235,7 @@ public abstract class PathValueAssertion extends AssertionBase {
     /* ----- ENUM: RESULT MESSAGE TYPES ------------------------------ */
 
     /**
-     * Enum of Result Message type, used with {@link #getResultMessage(ResultMessageType, String[], String, String)}
+     * Enum of Result Message type, used with {@link #getResultDescription(ResultMessageType, String[], String, String)}
      */
     protected enum ResultMessageType {
         RESULT_DEFAULT_PASS, RESULT_DEFAULT_FAIL,

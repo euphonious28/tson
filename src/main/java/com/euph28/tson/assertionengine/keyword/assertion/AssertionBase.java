@@ -4,11 +4,14 @@ import com.euph28.tson.assertionengine.TSONAssertionEngine;
 import com.euph28.tson.assertionengine.result.AssertionResult;
 import com.euph28.tson.context.TSONContext;
 import com.euph28.tson.context.provider.JsonValueProvider;
-import com.euph28.tson.interpreter.Statement;
 import com.euph28.tson.core.keyword.Keyword;
+import com.euph28.tson.interpreter.Statement;
+import com.euph28.tson.reporter.ReportType;
 import com.euph28.tson.reporter.TSONReporter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Base class of an Assertion Keyword
@@ -20,6 +23,11 @@ public abstract class AssertionBase extends Keyword {
      * Assertion engine for this {@link Keyword}. The engine is used for receiving shared values and returning results
      */
     TSONAssertionEngine tsonAssertionEngine;
+
+    /**
+     * Reporter for this {@link Keyword}. Used for reporting PASS/FAIL results
+     */
+    TSONReporter tsonReporter;
 
     /**
      * List of assertion results
@@ -42,27 +50,35 @@ public abstract class AssertionBase extends Keyword {
     /**
      * Record a pass assertion
      *
-     * @param description Description on the pass
+     * @param stepDescription   Description of the assertion step that was done. The step is independent of the result
+     *                          and is used for manual reproduction of the step
+     * @param resultDescription Description on the result of the assertion. This should explain the actual value and
+     *                          its accuracy to the expected value
      */
-    protected void resultPass(String description) {
-        assertionResultList.add(new AssertionResult(this, true, description));
+    protected void resultPass(String stepDescription, String resultDescription) {
+        assertionResultList.add(new AssertionResult(this, true, resultDescription));
+        tsonReporter.doReport(ReportType.PASS, stepDescription, resultDescription);
     }
 
     /**
      * Record a fail assertion
      *
-     * @param description Description on the fail
+     * @param stepDescription   Description of the assertion step that was done. The step is independent of the result
+     *                          and is used for manual reproduction of the step
+     * @param resultDescription Description on the result of the assertion. This should explain the actual value and
+     *                          its accuracy to the expected value
      */
-    protected void resultFail(String description) {
-        assertionResultList.add(new AssertionResult(this, false, description));
+    protected void resultFail(String stepDescription, String resultDescription) {
+        assertionResultList.add(new AssertionResult(this, false, resultDescription));
+        tsonReporter.doReport(ReportType.FAIL, stepDescription, resultDescription);
     }
 
     /**
      * Retrieve value from a jsonContent and a jsonPath
      *
-     * @param tsonContext  Context class that stores the variables related to the current running state
-     * @param jsonPath     Path to the value. Path is separated by colons (eg: body.item.0.value).
-     *                     Wildcards can be used to retrieve all values in an array
+     * @param tsonContext Context class that stores the variables related to the current running state
+     * @param jsonPath    Path to the value. Path is separated by colons (eg: body.item.0.value).
+     *                    Wildcards can be used to retrieve all values in an array
      * @return Map of path-to-value of resolved values. Returns {@code null} if path was invalid
      */
     protected Map<String, String> getValueFromJson(TSONContext tsonContext, String jsonPath) {
@@ -73,11 +89,11 @@ public abstract class AssertionBase extends Keyword {
     /* ----- METHODS ------------------------------ */
 
     /**
-     * Handle the assertion based on the provided data. Use {@link #resultPass(String)} and {@link #resultFail(String)}
+     * Handle the assertion based on the provided data. Use {@link #resultPass(String, String)} and {@link #resultFail(String, String)}
      * to report assertion results
      *
-     * @param tsonContext  Context class that stores the variables related to the current running state
-     * @param value        Additional value for this {@link Keyword} provided in the TSON file
+     * @param tsonContext Context class that stores the variables related to the current running state
+     * @param value       Additional value for this {@link Keyword} provided in the TSON file
      * @return Returns true if handle was successful
      */
     protected abstract boolean handleAssertion(TSONContext tsonContext, String value);
@@ -90,6 +106,9 @@ public abstract class AssertionBase extends Keyword {
      */
     @Override
     public boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, String value) {
+        // Store reporter
+        this.tsonReporter = tsonReporter;
+
         // Reset result list
         assertionResultList.clear();
 

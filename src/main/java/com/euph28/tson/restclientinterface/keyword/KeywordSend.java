@@ -1,6 +1,7 @@
 package com.euph28.tson.restclientinterface.keyword;
 
 import com.euph28.tson.context.TSONContext;
+import com.euph28.tson.reporter.ReportType;
 import com.euph28.tson.reporter.TSONReporter;
 import com.euph28.tson.restclientinterface.TSONRestClient;
 
@@ -41,6 +42,7 @@ public class KeywordSend extends KeywordBase {
     public boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, String value) {
         tsonRestClient.setRequestBody(value, true);
         tsonRestClient.send();
+        tsonReporter.doReport(ReportType.INFO, String.format("Send %s to %s", value, tsonRestClient.getRequestData().getRequestUrl()));
         return true;
     }
 }

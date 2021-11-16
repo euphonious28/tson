@@ -10,6 +10,7 @@ import java.util.List;
  * Main access point for reporting action results. This should be used for reporting the result of actions taken.
  * For logging details within(or outside) an action, use the logging interface instead. Reports are automatically
  * logged under this class. <br/>
+ * //TODO: Consider updating logging policy. Do we want to log errors as well (what if its execution error but not framework error)
  * <br/>
  * This TSONReporter internally stores one report and 0-many sub-TSONReporter(s), resulting in a tree structure
  */
@@ -119,6 +120,7 @@ public class TSONReporter {
      */
     public TSONReporter doReportWithDefault(ReportType defaultReportType, String defaultReportTitle, String defaultReportDetail, String defaultSource) {
         TSONReporter reporter = new TSONReporter(defaultReportType, defaultReportTitle, defaultReportDetail, defaultSource);
+        reporter.setAutoMergeSingleEntries(true);
         subReportList.add(reporter);
         return reporter;
     }
