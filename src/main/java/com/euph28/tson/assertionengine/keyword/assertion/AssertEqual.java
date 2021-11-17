@@ -20,8 +20,7 @@ public class AssertEqual extends PathValueAssertion {
     /* ----- OVERRIDE: PathValueAssertion ------------------------------ */
     @Override
     protected String getStepDescription(String[] expressionValues) throws ArrayIndexOutOfBoundsException {
-        // TODO: Fill this in
-        return "--not implemented--";
+        return String.format("Assert that value at \"%s\" is equal to \"%s\"", expressionValues[0], expressionValues[1]);
     }
 
     @Override

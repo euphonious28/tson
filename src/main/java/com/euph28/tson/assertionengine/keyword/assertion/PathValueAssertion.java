@@ -159,7 +159,6 @@ public abstract class PathValueAssertion extends AssertionBase {
                 path = getPathFromExpression(splitValues);
             } catch (ArrayIndexOutOfBoundsException e) {
                 LoggerFactory.getLogger(this.getClass()).error("Failed to retrieve path from expression array: " + Arrays.toString(splitValues), e);
-                // TODO: Wrap this in another(?) try-catch
                 resultFail("Failed to assert expression", "Failed to retrieve path for expression: " + entry);
                 continue;
             }
