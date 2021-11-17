@@ -57,7 +57,7 @@ public class AssertRegex extends PathValueAssertion {
 
     @Override
     protected boolean checkAssertion(String[] expressionValues, String actualValue, String path) throws ArrayIndexOutOfBoundsException {
-        return false;
+        return actualValue.matches(expressionValues[1]);
     }
 
     /* ----- OVERRIDE: AssertionBase ------------------------------ */
