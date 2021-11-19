@@ -1,17 +1,15 @@
 package com.euph28.tson.assertionengine;
 
+import com.euph28.tson.assertionengine.keyword.Assert;
 import com.euph28.tson.assertionengine.keyword.assertion.AssertEqual;
 import com.euph28.tson.assertionengine.keyword.assertion.AssertNotEqual;
 import com.euph28.tson.assertionengine.keyword.assertion.AssertRegex;
 import com.euph28.tson.assertionengine.listener.TSONAssertionEngineListener;
-import com.euph28.tson.assertionengine.result.AssertionReport;
-import com.euph28.tson.assertionengine.result.AssertionResult;
-import com.euph28.tson.assertionengine.keyword.Assert;
 import com.euph28.tson.core.keyword.Keyword;
 import com.euph28.tson.core.keyword.KeywordProvider;
+import com.euph28.tson.reporter.TSONReporter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -20,14 +18,9 @@ import java.util.List;
 public class TSONAssertionEngine implements KeywordProvider {
     /* ----- VARIABLES ------------------------------ */
     /**
-     * List of assertion reports that are pending read
+     * TSONReporter that should be used for reporting
      */
-    List<AssertionReport> assertionReportList = new ArrayList<>();
-
-    /**
-     * Current assertion report that is being written to
-     */
-    AssertionReport currentAssertionReport = new AssertionReport();
+    TSONReporter currentReporter = null;
 
     /**
      * List of event listeners
@@ -37,48 +30,35 @@ public class TSONAssertionEngine implements KeywordProvider {
     /* ----- METHODS: Assertion result handling ------------------------------ */
 
     /**
-     * Add {@link AssertionResult} to be reported
+     * Retrieve the reporter to be used
      *
-     * @param assertionResultList List of {@link AssertionResult} to be reported
+     * @param tsonReporter Reporter that was provided to the {@link Keyword}
+     * @return Reporter that should be used to reporting. This reporter will have the correct report tree position
      */
-    public void addAssertionResult(List<AssertionResult> assertionResultList) {
-        currentAssertionReport.addResults(assertionResultList);
-    }
-
-    /**
-     * Mark the current {@link AssertionReport} as complete status
-     */
-    public void publishCurrentAssertionResult() {
-        if (currentAssertionReport.getCountPass() + currentAssertionReport.getCountFail() != 0) {
-            assertionReportList.add(currentAssertionReport);
-            currentAssertionReport = new AssertionReport();
-            listenerList.forEach(listener -> listener.onAvailableReport(this));
+    public TSONReporter getReporter(TSONReporter tsonReporter) {
+        if (currentReporter == null) {          // Store reporter if there isn't one already being used
+            currentReporter = tsonReporter;
+        } else {
+            tsonReporter.delete();              // Otherwise, delete it and use the stored reporter
         }
+
+        return currentReporter;
     }
 
     /**
-     * Set the title of the current report
-     *
-     * @param title Title of the current report
+     * Set the current reporter to a different reporter
+     * @param tsonReporter New reporter to be used for subsequent reports
      */
-    public void setCurrentAssertionReportTitle(String title) {
-        currentAssertionReport.setReportTitle(title);
+    public void setReporter(TSONReporter tsonReporter) {
+        currentReporter = tsonReporter;
     }
 
     /**
-     * Get the current list of available {@link AssertionReport}
-     *
-     * @return List of available {@link AssertionReport}
+     * Remove tracking of current reporter so the next entry will use a new reporter (and generate a new report)
      */
-    public List<AssertionReport> getAssertionReportList() {
-        return Collections.unmodifiableList(assertionReportList);
-    }
-
-    /**
-     * Clear the current list of available {@link AssertionReport}
-     */
-    public void clearAssertionReports() {
-        assertionReportList.clear();
+    public void doCompleteReport() {
+        // Remove record of current reporter to get a new reporter
+        currentReporter = null;
     }
 
     /* ----- OVERRIDE: KeywordProvider ------------------------------ */

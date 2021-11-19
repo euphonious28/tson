@@ -1,7 +1,6 @@
 package com.euph28.tson.assertionengine.keyword.assertion;
 
 import com.euph28.tson.assertionengine.TSONAssertionEngine;
-import com.euph28.tson.assertionengine.result.AssertionResult;
 import com.euph28.tson.context.TSONContext;
 import com.euph28.tson.context.provider.JsonValueProvider;
 import com.euph28.tson.core.keyword.Keyword;
@@ -9,8 +8,6 @@ import com.euph28.tson.interpreter.Statement;
 import com.euph28.tson.reporter.ReportType;
 import com.euph28.tson.reporter.TSONReporter;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,11 +25,6 @@ public abstract class AssertionBase extends Keyword {
      * Reporter for this {@link Keyword}. Used for reporting PASS/FAIL results
      */
     TSONReporter tsonReporter;
-
-    /**
-     * List of assertion results
-     */
-    private final List<AssertionResult> assertionResultList = new ArrayList<>();
 
     /* ----- CONSTRUCTOR ------------------------------ */
 
@@ -56,8 +48,7 @@ public abstract class AssertionBase extends Keyword {
      *                          its accuracy to the expected value
      */
     protected void resultPass(String stepDescription, String resultDescription) {
-        assertionResultList.add(new AssertionResult(this, true, resultDescription));
-        tsonReporter.doReport(ReportType.PASS, stepDescription, resultDescription);
+        tsonReporter.doReport(ReportType.PASS, stepDescription, resultDescription, this.getCode());
     }
 
     /**
@@ -69,8 +60,7 @@ public abstract class AssertionBase extends Keyword {
      *                          its accuracy to the expected value
      */
     protected void resultFail(String stepDescription, String resultDescription) {
-        assertionResultList.add(new AssertionResult(this, false, resultDescription));
-        tsonReporter.doReport(ReportType.FAIL, stepDescription, resultDescription);
+        tsonReporter.doReport(ReportType.FAIL, stepDescription, resultDescription, this.getCode());
     }
 
     /**
@@ -81,6 +71,7 @@ public abstract class AssertionBase extends Keyword {
      *                    Wildcards can be used to retrieve all values in an array
      * @return Map of path-to-value of resolved values. Returns {@code null} if path was invalid
      */
+    // TODO: Refactor this to be a general getValue that can use Context's ContentProvider
     protected Map<String, String> getValueFromJson(TSONContext tsonContext, String jsonPath) {
         JsonValueProvider jsonValueProvider = new JsonValueProvider();
         return jsonValueProvider.getValuesFromJson(tsonContext, jsonPath);
@@ -107,21 +98,15 @@ public abstract class AssertionBase extends Keyword {
     @Override
     public boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, String value) {
         // Store reporter
-        this.tsonReporter = tsonReporter;
-
-        // Reset result list
-        assertionResultList.clear();
+        this.tsonReporter = tsonAssertionEngine.getReporter(tsonReporter);
 
         // Perform assertion (and populate assertionResultList)
         boolean status = handleAssertion(tsonContext, value);
 
-        // Report result to AssertionEngine
-        tsonAssertionEngine.addAssertionResult(assertionResultList);
-
         // Check if AssertionEngine should publish result (publish if next action is not an assertion)
         Statement nextStatementAction = tsonContext.getTsonInterpreter().peekAction();
         if (nextStatementAction == null || !(nextStatementAction.getKeyword() instanceof AssertionBase)) {
-            tsonAssertionEngine.publishCurrentAssertionResult();
+            tsonAssertionEngine.doCompleteReport();
         }
 
         return status;

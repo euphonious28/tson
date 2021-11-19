@@ -30,6 +30,11 @@ public class TSONReporter {
     Report report;
 
     /**
+     * Parent reporter of this reporter
+     */
+    TSONReporter parent;
+
+    /**
      * Property to indicate if entries with only one sub-report should be merged with the sub-report.
      * If merged, the sub-report's values will be used instead of this. Value of this {@link Report#source} will
      * be used if the sub-report does not have a value for it
@@ -40,23 +45,25 @@ public class TSONReporter {
 
     /**
      * Create a TSONReporter with no report content. This should be used only for the root of the reports.
-     * Use {@link #TSONReporter(ReportType, String, String, String)} if this should have a report entry
+     * Use {@link #TSONReporter(TSONReporter, ReportType, String, String, String)} if this should have a report entry
      */
     public TSONReporter() {
-        report = new Report(ReportType.TRACE, "", "", "");
+        this(null, ReportType.TRACE, "", "", "");
     }
 
     /**
      * Create a TSONReporter with report content
      *
+     * @param parent       Parent TSONReporter of this report. Leave as {@code null} if it isn't created by another TSONReporter
      * @param reportType   Type of the report
      * @param reportTitle  Title of the report. This will be the information shown when seen in an overview
      * @param reportDetail Details within the report. This will be hidden by default. Use {@code reportTitle} for content that
      *                     must be shown in the overview
      * @param source       Source of the code that created the report
      */
-    public TSONReporter(ReportType reportType, String reportTitle, String reportDetail, String source) {
+    public TSONReporter(TSONReporter parent, ReportType reportType, String reportTitle, String reportDetail, String source) {
         report = new Report(reportType, reportTitle, reportDetail, source);
+        this.parent = parent;
     }
 
     /* ----- METHODS: REPORTING ------------------------------ */
@@ -72,9 +79,7 @@ public class TSONReporter {
      * @return Created reporter with the report entry. Use this to add sub-reports within the created report
      */
     public TSONReporter doReport(ReportType reportType, String reportTitle, String reportDetail, String source) {
-        TSONReporter reporter = new TSONReporter(reportType, reportTitle, reportDetail, source);
-        subReportList.add(reporter);
-        return reporter;
+        return createSubReport(reportType, reportTitle, reportDetail, source);
     }
 
     /**
@@ -87,9 +92,7 @@ public class TSONReporter {
      * @return Created reporter with the report entry. Use this to add sub-reports within the created report
      */
     public TSONReporter doReport(ReportType reportType, String reportTitle, String reportDetail) {
-        TSONReporter reporter = new TSONReporter(reportType, reportTitle, reportDetail, "");
-        subReportList.add(reporter);
-        return reporter;
+        return createSubReport(reportType, reportTitle, reportDetail, "");
     }
 
     /**
@@ -100,9 +103,7 @@ public class TSONReporter {
      * @return Created reporter with the report entry. Use this to add sub-reports within the created report
      */
     public TSONReporter doReport(ReportType reportType, String reportTitle) {
-        TSONReporter reporter = new TSONReporter(reportType, reportTitle, "", "");
-        subReportList.add(reporter);
-        return reporter;
+        return createSubReport(reportType, reportTitle, "", "");
     }
 
     /**
@@ -119,8 +120,36 @@ public class TSONReporter {
      * @return Reporter for writing the sub-report/actual report to
      */
     public TSONReporter doReportWithDefault(ReportType defaultReportType, String defaultReportTitle, String defaultReportDetail, String defaultSource) {
-        TSONReporter reporter = new TSONReporter(defaultReportType, defaultReportTitle, defaultReportDetail, defaultSource);
+        TSONReporter reporter = createSubReport(defaultReportType, defaultReportTitle, defaultReportDetail, defaultSource);
         reporter.setAutoMergeSingleEntries(true);
+        return reporter;
+    }
+
+    /**
+     * Delete this report from parent
+     */
+    public void delete() {
+        if (parent != null) {
+            parent.deleteSubReport(this);
+            parent = null;
+        } else {
+            logger.error("Unable to delete reporter from parent. TSONReporter does not have a parent");
+        }
+    }
+
+    /* ----- METHODS: INTERNAL ------------------------------ */
+
+    /**
+     * Remove sub-report from {@link #subReportList}
+     *
+     * @param subReporter Sub-report to be deleted
+     */
+    protected void deleteSubReport(TSONReporter subReporter) {
+        subReportList.remove(subReporter);
+    }
+
+    protected TSONReporter createSubReport(ReportType reportType, String reportTitle, String reportDetail, String source) {
+        TSONReporter reporter = new TSONReporter(this, reportType, reportTitle, reportDetail, source);
         subReportList.add(reporter);
         return reporter;
     }
@@ -130,6 +159,7 @@ public class TSONReporter {
     /**
      * Get a basic output of the report(s) within the reporter. This method is temporary and will be replaced
      * in the future with better (more configurable) output
+     *
      * @return Report split by line
      */
     public List<String> getReportAsBasicString() {
@@ -156,12 +186,13 @@ public class TSONReporter {
 
     /**
      * Retrieve the report type with the highest severity within the reporter
+     *
      * @return Report type with the highest severity
      */
     ReportType getDerivedReportType() {
         ReportType result = report.reportType;
 
-        for(TSONReporter reporter : subReportList) {
+        for (TSONReporter reporter : subReportList) {
             result = reporter.getDerivedReportType().severity > result.severity
                     ? reporter.getDerivedReportType()
                     : result;

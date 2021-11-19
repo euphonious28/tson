@@ -3,6 +3,7 @@ package com.euph28.tson.assertionengine.keyword;
 import com.euph28.tson.assertionengine.TSONAssertionEngine;
 import com.euph28.tson.context.TSONContext;
 import com.euph28.tson.core.keyword.Keyword;
+import com.euph28.tson.reporter.ReportType;
 import com.euph28.tson.reporter.TSONReporter;
 
 /**
@@ -52,8 +53,7 @@ public class Assert extends Keyword {
 
     @Override
     public boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, String value) {
-        tsonAssertionEngine.publishCurrentAssertionResult();
-        tsonAssertionEngine.setCurrentAssertionReportTitle(value);
+        tsonAssertionEngine.setReporter(tsonReporter.doReport(ReportType.INFO, value));
         return true;
     }
 }
