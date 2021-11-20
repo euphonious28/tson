@@ -1,6 +1,7 @@
 package com.euph28.tson.interpreter;
 
 import com.euph28.tson.core.keyword.Keyword;
+import com.euph28.tson.core.keyword.KeywordType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,16 +113,17 @@ public class Interpretation {
     }
 
     /**
-     * Retrieve the next {@link Statement} in the iterator that is an action ({@link Keyword#isAction()}). Does not move the iterator forward
+     * Retrieve the next {@link Statement} in the iterator that has a matching type. Does not move the iterator forward
      *
-     * @return Returns the next {@link Statement} that has {@link Keyword#isAction()}{@code ==true}.
+     * @param targetTypes Valid types to filter for
+     * @return Returns the next {@link Statement} that has a type matching with {@code targetTypes}
      * Returns {@code null} if it has reached the end without finding a suitable match
      */
-    public Statement peekAction() {
-        return !isEof() ?
+    public Statement peekType(List<KeywordType> targetTypes) {
+        return isEof() ?
                 statementList.subList(iteratorNextIndex, statementList.size())
                         .stream()
-                        .filter(statement -> statement.getKeyword().isAction())
+                        .filter(statement -> targetTypes.contains(statement.getKeyword().getKeywordType()))
                         .findFirst()
                         .orElse(null)
                 : null;

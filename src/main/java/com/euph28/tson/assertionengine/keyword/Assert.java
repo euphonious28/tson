@@ -3,6 +3,7 @@ package com.euph28.tson.assertionengine.keyword;
 import com.euph28.tson.assertionengine.TSONAssertionEngine;
 import com.euph28.tson.context.TSONContext;
 import com.euph28.tson.core.keyword.Keyword;
+import com.euph28.tson.core.keyword.KeywordType;
 import com.euph28.tson.reporter.ReportType;
 import com.euph28.tson.reporter.TSONReporter;
 
@@ -47,8 +48,8 @@ public class Assert extends Keyword {
     }
 
     @Override
-    public boolean isAction() {
-        return false;
+    public KeywordType getKeywordType() {
+        return KeywordType.ASSERTION;
     }
 
     @Override

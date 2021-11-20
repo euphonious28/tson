@@ -4,10 +4,12 @@ import com.euph28.tson.assertionengine.TSONAssertionEngine;
 import com.euph28.tson.context.TSONContext;
 import com.euph28.tson.context.provider.JsonValueProvider;
 import com.euph28.tson.core.keyword.Keyword;
+import com.euph28.tson.core.keyword.KeywordType;
 import com.euph28.tson.interpreter.Statement;
 import com.euph28.tson.reporter.ReportType;
 import com.euph28.tson.reporter.TSONReporter;
 
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -103,9 +105,11 @@ public abstract class AssertionBase extends Keyword {
         // Perform assertion (and populate assertionResultList)
         boolean status = handleAssertion(tsonContext, value);
 
-        // Check if AssertionEngine should publish result (publish if next action is not an assertion)
-        Statement nextStatementAction = tsonContext.getTsonInterpreter().peekAction();
-        if (nextStatementAction == null || !(nextStatementAction.getKeyword() instanceof AssertionBase)) {
+        // Check if AssertionEngine should publish result (publish if upcoming keyword is action and not assertion)
+        Statement nextStatement = tsonContext.getTsonInterpreter().peekType(
+                Arrays.asList(KeywordType.ACTION, KeywordType.ASSERTION)
+        );
+        if (nextStatement == null || nextStatement.getKeyword().getKeywordType() == KeywordType.ACTION) {
             tsonAssertionEngine.doCompleteReport();
         }
 
@@ -113,7 +117,7 @@ public abstract class AssertionBase extends Keyword {
     }
 
     @Override
-    public boolean isAction() {
-        return true;
+    public KeywordType getKeywordType() {
+        return KeywordType.ASSERTION;
     }
 }
