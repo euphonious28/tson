@@ -3,6 +3,9 @@ package com.euph28.tson.context.keyword;
 import com.euph28.tson.context.TSONContext;
 import com.euph28.tson.context.VariableType;
 import com.euph28.tson.core.keyword.Keyword;
+import com.euph28.tson.core.keyword.KeywordType;
+import com.euph28.tson.reporter.Report;
+import com.euph28.tson.reporter.ReportType;
 import com.euph28.tson.reporter.TSONReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,12 +40,17 @@ public class RequestVariable extends Keyword {
     }
 
     @Override
-    public boolean isAction() {
-        return true;
+    public KeywordType getKeywordType() {
+        return KeywordType.UTILITY;
     }
 
     @Override
     public boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, String value) {
+        // Update report
+        Report report = tsonReporter.getReport();
+        report.setReportType(ReportType.INFO);
+        report.setReportFallbackTitle("Create variable from request");
+
         // Split into entries
         String[] values = split(tsonContext.resolveContent(value), ' ', true);
 
@@ -68,6 +76,19 @@ public class RequestVariable extends Keyword {
             // Store value
             tsonContext.addVariable(VariableType.VARIABLE, splitValues[0], pathValue);
             logger.trace(String.format("Stored request variable with key \"%s\" and value \"%s\"", values[0], pathValue));
+            tsonReporter.createSubReport(new Report(
+                            ReportType.INFO,
+                            entry,
+                            String.format(
+                                    "Store variable \"%s\" with request value at path \"%s\". Value at path is: %s",
+                                    splitValues[0],
+                                    splitValues[1],
+                                    pathValue
+                            ),
+                            String.format("Create variable \"%s\" with request value from path \"%s\"", splitValues[0], splitValues[1]),
+                            String.format("[%s] %s", this.getCode(), value)
+                    )
+            );
         }
         return true;
     }

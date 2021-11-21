@@ -34,16 +34,15 @@ public abstract class Keyword {
      */
     public abstract String getDescriptionLong();
 
-    /* ----- GETTERS: BEHAVIOUR ------------------------------ */
-
     /**
-     * Behaviour attribute on whether this {@link Keyword} performs an action (eg: Assertion, Send)
+     * Retrieve the type of the {@link Keyword}
      *
-     * @return Returns {@code true} if this {@link Keyword} performs an action
+     * @return Type of this {@link Keyword}
      */
-    public abstract boolean isAction();
+    public abstract KeywordType getKeywordType();
 
     /* ----- METHODS: UTILITY ------------------------------ */
+
     /**
      * Split a text by delimiter character, respecting quotes
      *
@@ -104,7 +103,7 @@ public abstract class Keyword {
      *
      * @param tsonContext  Context class that stores the variables related to the current running state
      * @param tsonReporter Reporter class to report execution result to
-     * @param value Additional value for this {@link Keyword} provided in the TSON file
+     * @param value        Additional value for this {@link Keyword} provided in the TSON file
      * @return Returns true if handle was successful
      */
     public abstract boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, String value);

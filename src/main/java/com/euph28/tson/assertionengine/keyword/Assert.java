@@ -3,6 +3,9 @@ package com.euph28.tson.assertionengine.keyword;
 import com.euph28.tson.assertionengine.TSONAssertionEngine;
 import com.euph28.tson.context.TSONContext;
 import com.euph28.tson.core.keyword.Keyword;
+import com.euph28.tson.core.keyword.KeywordType;
+import com.euph28.tson.reporter.Report;
+import com.euph28.tson.reporter.ReportType;
 import com.euph28.tson.reporter.TSONReporter;
 
 /**
@@ -46,14 +49,21 @@ public class Assert extends Keyword {
     }
 
     @Override
-    public boolean isAction() {
-        return false;
+    public KeywordType getKeywordType() {
+        return KeywordType.ASSERTION;
     }
 
     @Override
     public boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, String value) {
-        tsonAssertionEngine.publishCurrentAssertionResult();
-        tsonAssertionEngine.setCurrentAssertionReportTitle(value);
+        // Report
+        Report report = tsonReporter.getReport();
+        report.setReportType(ReportType.INFO);
+        report.setReportFallbackTitle(value);
+        report.setReportDetail(value);
+        report.setReportStep("Perform assertions");
+
+        // Store reporter in AssertionEngine
+        tsonAssertionEngine.setReporter(tsonReporter);
         return true;
     }
 }

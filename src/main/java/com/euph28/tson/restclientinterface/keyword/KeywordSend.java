@@ -1,6 +1,9 @@
 package com.euph28.tson.restclientinterface.keyword;
 
 import com.euph28.tson.context.TSONContext;
+import com.euph28.tson.core.keyword.KeywordType;
+import com.euph28.tson.reporter.Report;
+import com.euph28.tson.reporter.ReportType;
 import com.euph28.tson.reporter.TSONReporter;
 import com.euph28.tson.restclientinterface.TSONRestClient;
 
@@ -33,14 +36,21 @@ public class KeywordSend extends KeywordBase {
     }
 
     @Override
-    public boolean isAction() {
-        return true;
+    public KeywordType getKeywordType() {
+        return KeywordType.ACTION;
     }
 
     @Override
     public boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, String value) {
+        // Send request
         tsonRestClient.setRequestBody(value, true);
         tsonRestClient.send();
+
+        // Report
+        Report report = tsonReporter.getReport();
+        report.setReportType(ReportType.INFO);
+        report.setReportFallbackTitle("Send " + value);
+        report.setReportStep(String.format("Send %s to %s", value, tsonRestClient.getRequestData().getRequestUrl()));
         return true;
     }
 }

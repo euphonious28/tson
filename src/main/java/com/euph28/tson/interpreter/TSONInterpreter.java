@@ -2,6 +2,7 @@ package com.euph28.tson.interpreter;
 
 import com.euph28.tson.core.keyword.Keyword;
 import com.euph28.tson.core.keyword.KeywordProvider;
+import com.euph28.tson.core.keyword.KeywordType;
 import com.euph28.tson.core.provider.ContentProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,10 +80,10 @@ public class TSONInterpreter {
     }
 
     /**
-     * @see Interpretation#peekAction()
+     * @see Interpretation#peekType(List)
      */
-    public Statement peekAction() {
-        return interpretation.peekAction();
+    public Statement peekType(List<KeywordType> targetTypes) {
+        return interpretation.peekType(targetTypes);
     }
 
     /**
