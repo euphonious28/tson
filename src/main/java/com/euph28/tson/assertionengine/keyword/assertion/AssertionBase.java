@@ -1,15 +1,14 @@
 package com.euph28.tson.assertionengine.keyword.assertion;
 
 import com.euph28.tson.assertionengine.TSONAssertionEngine;
-import com.euph28.tson.assertionengine.reporting.ReproductionReportRetriever;
 import com.euph28.tson.context.TSONContext;
 import com.euph28.tson.context.provider.JsonValueProvider;
 import com.euph28.tson.core.keyword.Keyword;
 import com.euph28.tson.core.keyword.KeywordType;
 import com.euph28.tson.interpreter.Statement;
+import com.euph28.tson.reporter.TSONReporter;
 import com.euph28.tson.reporter.report.Report;
 import com.euph28.tson.reporter.report.ReportType;
-import com.euph28.tson.reporter.TSONReporter;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -72,20 +71,14 @@ public abstract class AssertionBase extends Keyword {
      * @param resultExpression  Assertion expression that this result was using (eg: <path>=<expectedValue>)
      */
     protected void resultFail(String resultDescription, String stepDescription, String resultExpression) {
-        // Create report
-        Report report = new Report(
+        // Attach report to reporter as sub-report
+        tsonReporter.createSubReport(new Report(
                 ReportType.FAIL,
                 resultExpression,
                 resultDescription,
                 stepDescription,
                 tsonReporter.getReport().getSource()
-        );
-
-        // Attach report to reporter as sub-report
-        tsonReporter.createSubReport(report);
-
-        // Update report with reproduction scenario (do this after attaching to include this step)
-        report.setReportDetail(report.getReportDetail() + "\n\n" + tsonReporter.getGeneratedReport(new ReproductionReportRetriever()));
+        ));
     }
 
     /**
