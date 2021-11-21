@@ -30,23 +30,25 @@ public class TSONAssertionEngine implements KeywordProvider {
     /* ----- METHODS: Assertion result handling ------------------------------ */
 
     /**
-     * Retrieve the reporter to be used
+     * Retrieve the reporter to be used. Returns a stored reporter if {@link #setReporter(TSONReporter)}  was used beforehand.
+     * Otherwise, returns the same reporter
      *
      * @param tsonReporter Reporter that was provided to the {@link Keyword}
      * @return Reporter that should be used to reporting. This reporter will have the correct report tree position
      */
     public TSONReporter getReporter(TSONReporter tsonReporter) {
-        if (currentReporter == null) {          // Store reporter if there isn't one already being used
-            currentReporter = tsonReporter;
-        } else {
-            tsonReporter.delete();              // Otherwise, delete it and use the stored reporter
+        if (currentReporter == null) {  // Return the provided reporter if there is no current reporter (ASSERT not called)
+            return tsonReporter;
+        } else {                        // Otherwise, return the sub-report of provided reporter
+            TSONReporter reporter = currentReporter.createSubReport(tsonReporter.getReport());
+            tsonReporter.delete();
+            return reporter;
         }
-
-        return currentReporter;
     }
 
     /**
      * Set the current reporter to a different reporter
+     *
      * @param tsonReporter New reporter to be used for subsequent reports
      */
     public void setReporter(TSONReporter tsonReporter) {
