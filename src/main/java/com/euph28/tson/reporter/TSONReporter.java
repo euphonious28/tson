@@ -1,5 +1,7 @@
 package com.euph28.tson.reporter;
 
+import com.euph28.tson.reporter.report.Report;
+import com.euph28.tson.reporter.report.ReportType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,7 +115,7 @@ public class TSONReporter {
         List<String> result = new ArrayList<>();
 
         // Report as first entry
-        result.add(String.format("[%s] %s", getDerivedReportType(), report.reportTitle));
+        result.add(String.format("[%s] %s", getDerivedReportType(), report.getReportTitle()));
 
         // Add sub-reports into result with indentation
         for (TSONReporter reporter : subReportList) {
@@ -179,10 +181,10 @@ public class TSONReporter {
      * @return Report type with the highest severity
      */
     ReportType getDerivedReportType() {
-        ReportType result = report.reportType;
+        ReportType result = report.getReportType();
 
         for (TSONReporter reporter : subReportList) {
-            result = reporter.getDerivedReportType().severity > result.severity
+            result = reporter.getDerivedReportType().getSeverity() > result.getSeverity()
                     ? reporter.getDerivedReportType()
                     : result;
         }

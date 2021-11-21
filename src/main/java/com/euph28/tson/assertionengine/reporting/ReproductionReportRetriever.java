@@ -1,8 +1,8 @@
 package com.euph28.tson.assertionengine.reporting;
 
-import com.euph28.tson.reporter.Report;
+import com.euph28.tson.reporter.report.Report;
 import com.euph28.tson.reporter.ReportRetriever;
-import com.euph28.tson.reporter.ReportType;
+import com.euph28.tson.reporter.report.ReportType;
 
 import java.util.List;
 

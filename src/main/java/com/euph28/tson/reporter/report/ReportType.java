@@ -1,4 +1,4 @@
-package com.euph28.tson.reporter;
+package com.euph28.tson.reporter.report;
 
 /**
  * Report type for indicating severity or type of report
@@ -51,5 +51,10 @@ public enum ReportType {
     /* ----- CONSTRUCTOR ------------------------------ */
     ReportType(int severity) {
         this.severity = severity;
+    }
+
+    /* ----- GETTERS ------------------------------ */
+    public int getSeverity() {
+        return severity;
     }
 }

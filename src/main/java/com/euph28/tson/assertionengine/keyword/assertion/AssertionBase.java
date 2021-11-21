@@ -7,8 +7,8 @@ import com.euph28.tson.context.provider.JsonValueProvider;
 import com.euph28.tson.core.keyword.Keyword;
 import com.euph28.tson.core.keyword.KeywordType;
 import com.euph28.tson.interpreter.Statement;
-import com.euph28.tson.reporter.Report;
-import com.euph28.tson.reporter.ReportType;
+import com.euph28.tson.reporter.report.Report;
+import com.euph28.tson.reporter.report.ReportType;
 import com.euph28.tson.reporter.TSONReporter;
 
 import java.util.Arrays;

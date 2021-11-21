@@ -1,4 +1,4 @@
-package com.euph28.tson.reporter;
+package com.euph28.tson.reporter.report;
 
 /**
  * An individual report entry
