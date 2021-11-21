@@ -11,6 +11,7 @@ import com.euph28.tson.reporter.report.Report;
 import com.euph28.tson.reporter.report.ReportType;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -140,5 +141,12 @@ public abstract class AssertionBase extends Keyword {
     @Override
     public KeywordType getKeywordType() {
         return KeywordType.ASSERTION;
+    }
+
+    @Override
+    public List<String> getLspTags() {
+        List<String> result = super.getLspTags();
+        result.add("Assertion");
+        return result;
     }
 }
