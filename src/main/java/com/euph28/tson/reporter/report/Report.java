@@ -39,7 +39,7 @@ public class Report {
     /**
      * Source of the code that created the report
      */
-    String source;
+    ReportSource source;
 
     /* ----- CONSTRUCTOR ------------------------------ */
 
@@ -49,10 +49,12 @@ public class Report {
      * @param reportType  Type of the report
      * @param reportTitle Title of the report from the user. This will be the information shown when seen in an overview.
      *                    Leave this as an empty String to use {@link #reportFallbackTitle}
+     * @param source       Source of the code that created the report
      */
-    Report(ReportType reportType, String reportTitle) {
+    Report(ReportType reportType, String reportTitle, ReportSource source) {
         this.reportType = reportType;
         this.reportTitle = reportTitle;
+        this.source = source;
     }
 
     /**
@@ -66,7 +68,7 @@ public class Report {
      * @param reportStep   Reproduction steps that provides a way to manually reproduce the step
      * @param source       Source of the code that created the report
      */
-    public Report(ReportType reportType, String reportTitle, String reportDetail, String reportStep, String source) {
+    public Report(ReportType reportType, String reportTitle, String reportDetail, String reportStep, ReportSource source) {
         this.reportType = reportType;
         this.reportTitle = reportTitle;
         this.reportDetail = reportDetail;
@@ -108,11 +110,7 @@ public class Report {
         this.reportType = reportType;
     }
 
-    public String getSource() {
+    public ReportSource getSource() {
         return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
     }
 }

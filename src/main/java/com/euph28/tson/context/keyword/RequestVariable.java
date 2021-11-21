@@ -86,7 +86,7 @@ public class RequestVariable extends Keyword {
                                     pathValue
                             ),
                             String.format("Create variable \"%s\" with request value from path \"%s\"", splitValues[0], splitValues[1]),
-                            String.format("[%s] %s", this.getCode(), value)
+                            tsonReporter.getReport().getSource()
                     )
             );
         }

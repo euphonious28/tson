@@ -13,14 +13,13 @@ public interface ReportRetriever<ReportDataType> {
      * Retrieve the report of the current {@link TSONReporter} based on its contained data. This method is executed
      * recursively until the root generates an output
      *
-     * @param derivedReportType Highest {@link ReportType#getSeverity()} {@link ReportType} within the sub-reports
-     * @param report            Current report within the {@link TSONReporter}
-     * @param subReportList     List of sub-reports within the {@link TSONReporter}
-     * @param layer             The current layer of this report (layer starts at 0 with root report)
-     * @param index             The current index of this report (index starts at 0 with first sub-report)
+     * @param reporter      Current {@link TSONReporter}
+     * @param subReportList List of sub-reports within the {@link TSONReporter}
+     * @param layer         The current layer of this report (layer starts at 0 with root report)
+     * @param index         The current index of this report (index starts at 0 with first sub-report)
      * @return Formatted output to be passed to parent
      */
-    ReportDataType getReport(ReportType derivedReportType, Report report, List<ReportDataType> subReportList, int layer, int index);
+    ReportDataType getReport(TSONReporter reporter, List<ReportDataType> subReportList, int layer, int index);
 
     /**
      * Filter to determine if a report should be used or ignored
