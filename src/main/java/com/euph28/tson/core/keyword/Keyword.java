@@ -34,6 +34,16 @@ public abstract class Keyword {
      */
     public abstract String getLspDescriptionLong();
 
+    /**
+     * Retrieve list of tags that this {@link Keyword} is related to. When the user enters text related to the tag,
+     * this {@link Keyword} will be recommended. Used for LSP and documentation
+     *
+     * @return List of words that should recommend {@link Keyword}
+     */
+    public List<String> getLspTags() {
+        return new ArrayList<>();
+    }
+
     /* ----- BEHAVIOUR ------------------------------ */
 
     /**
