@@ -1,6 +1,7 @@
 package com.euph28.tson.assertionengine.keyword.assertion;
 
 import com.euph28.tson.assertionengine.TSONAssertionEngine;
+import com.euph28.tson.assertionengine.reporting.ReproductionReportRetriever;
 import com.euph28.tson.context.TSONContext;
 import com.euph28.tson.context.provider.JsonValueProvider;
 import com.euph28.tson.core.keyword.Keyword;
@@ -71,13 +72,20 @@ public abstract class AssertionBase extends Keyword {
      * @param resultExpression  Assertion expression that this result was using (eg: <path>=<expectedValue>)
      */
     protected void resultFail(String resultDescription, String stepDescription, String resultExpression) {
-        tsonReporter.createSubReport(new Report(
+        // Create report
+        Report report = new Report(
                 ReportType.FAIL,
                 resultExpression,
                 resultDescription,
                 stepDescription,
                 tsonReporter.getReport().getSource()
-        ));
+        );
+
+        // Attach report to reporter as sub-report
+        tsonReporter.createSubReport(report);
+
+        // Update report with reproduction scenario (do this after attaching to include this step)
+        report.setReportDetail(report.getReportDetail() + "\n\n" + tsonReporter.getGeneratedReport(new ReproductionReportRetriever()));
     }
 
     /**
