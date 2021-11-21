@@ -120,7 +120,7 @@ public class Interpretation {
      * Returns {@code null} if it has reached the end without finding a suitable match
      */
     public Statement peekType(List<KeywordType> targetTypes) {
-        return isEof() ?
+        return !isEof() ?
                 statementList.subList(iteratorNextIndex, statementList.size())
                         .stream()
                         .filter(statement -> targetTypes.contains(statement.getKeyword().getKeywordType()))
