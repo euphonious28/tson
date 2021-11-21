@@ -25,14 +25,16 @@ public abstract class Keyword {
      *
      * @return Short description of this {@link Keyword}
      */
-    public abstract String getDescriptionShort();
+    public abstract String getLspDescriptionShort();
 
     /**
      * Retrieve a long description of what this {@link Keyword} performs. Used for LSP and documentation
      *
      * @return Long description of this {@link Keyword}
      */
-    public abstract String getDescriptionLong();
+    public abstract String getLspDescriptionLong();
+
+    /* ----- BEHAVIOUR ------------------------------ */
 
     /**
      * Retrieve the type of the {@link Keyword}

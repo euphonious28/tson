@@ -67,12 +67,12 @@ public class AssertNotEqual extends PathValueAssertion {
     }
 
     @Override
-    public String getDescriptionShort() {
+    public String getLspDescriptionShort() {
         return "Assert that value is not equal";
     }
 
     @Override
-    public String getDescriptionLong() {
+    public String getLspDescriptionLong() {
         return "Asserts that value located at a JSON path is not equal to the provided value.\n"
                 + "Usage\t: <jsonPath>=<invalidValue>\n"
                 + "Example\t: body.item.0.subItem=text\n"

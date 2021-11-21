@@ -39,12 +39,12 @@ public class Assert extends Keyword {
     }
 
     @Override
-    public String getDescriptionShort() {
+    public String getLspDescriptionShort() {
         return "Group subsequent assertions";
     }
 
     @Override
-    public String getDescriptionLong() {
+    public String getLspDescriptionLong() {
         return "Groups all subsequent assertions into the same report";
     }
 

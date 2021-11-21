@@ -27,12 +27,12 @@ public class ResponseVariable extends Keyword {
     }
 
     @Override
-    public String getDescriptionShort() {
+    public String getLspDescriptionShort() {
         return "Create variable from JSON response body";
     }
 
     @Override
-    public String getDescriptionLong() {
+    public String getLspDescriptionLong() {
         return "Create a variable from the JSON response body based on JSON path.\n"
                 + "Usage\t: <variableName>=<jsonPath>\n"
                 + "Example\t: textValue=body.item.0.value"

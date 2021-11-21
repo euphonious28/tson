@@ -26,12 +26,12 @@ public class PropertyId extends Keyword {
     }
 
     @Override
-    public String getDescriptionShort() {
+    public String getLspDescriptionShort() {
         return "Set the ID of this test";
     }
 
     @Override
-    public String getDescriptionLong() {
+    public String getLspDescriptionLong() {
         return "Set the ID of this test. Subsequent calls will override the existing ID";
     }
 

@@ -26,12 +26,12 @@ public class KeywordSend extends KeywordBase {
     }
 
     @Override
-    public String getDescriptionShort() {
+    public String getLspDescriptionShort() {
         return "JSON request";
     }
 
     @Override
-    public String getDescriptionLong() {
+    public String getLspDescriptionLong() {
         return "Path to JSON body to be sent";
     }
 
