@@ -52,26 +52,33 @@ public class Interpretation {
         /*
          * PARSER FLOW
          *
-         * 1. Setup for splitting (step 2): Generate regex from Keywords
-         * 2. Split from one long String into a list of Strings,
-         *    each String starting with a Keyword (Statement String)
-         * 3. Convert from String to Statement
+         * 1. Setup             : Generate regex from Keywords
+         * 2. Pre-processing    : Remove comments
+         * 3. Parsing           : Split from one long String into a list of Strings,
+         *                        each String starting with a Keyword (Statement String)
+         * 4. Post-processing   : Convert from String to Statement
          */
 
-        /* 1. Setup for splitting (step 2): Generate regex from Keywords */
+        /* 1. Setup             : Generate regex from Keywords */
         String[] keywordCodeList = keywordList
                 .stream()
                 .map(Keyword::getCode)
                 .toArray(String[]::new);
         String regex = "(?=\\b(" + String.join("|", keywordCodeList) + ")\\b)";
 
+        /* 2. Pre-processing    : Remove comments */
+        /* 2.1 Remove multi-line comments */
+        content = content.replaceAll("/\\*.*?(?:\\*/|\\z)", "");
+        /* 2.2 Remove single-line comments */
+        content = content.replaceAll("//.*?(?:[\\n\\r]|\\z)", "");
+
         /*
-         * 2. Split from one long String into a list of Strings,
-         *    each String starting with a Keyword (Statement String)
+         * 3. Parsing           : Split from one long String into a list of Strings,
+         *                        each String starting with a Keyword (Statement String)
          */
         List<String> statementStringList = Arrays.asList(content.split(regex));
 
-        /* 3. Convert from String to Statement (and return) */
+        /* 4. Post-processing   : Convert from String to Statement (and return) */
         return statementStringList
                 .stream()
                 .map(s -> s                                             // Clear redundant whitespaces
