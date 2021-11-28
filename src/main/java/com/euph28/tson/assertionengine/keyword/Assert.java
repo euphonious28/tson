@@ -4,6 +4,7 @@ import com.euph28.tson.assertionengine.TSONAssertionEngine;
 import com.euph28.tson.context.TSONContext;
 import com.euph28.tson.core.keyword.Keyword;
 import com.euph28.tson.core.keyword.KeywordType;
+import com.euph28.tson.interpreter.Statement;
 import com.euph28.tson.reporter.report.Report;
 import com.euph28.tson.reporter.report.ReportType;
 import com.euph28.tson.reporter.TSONReporter;
@@ -54,12 +55,12 @@ public class Assert extends Keyword {
     }
 
     @Override
-    public boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, String value) {
+    public boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, Statement statement) {
         // Report
         Report report = tsonReporter.getReport();
         report.setReportType(ReportType.INFO);
-        report.setReportFallbackTitle(value);
-        report.setReportDetail(value);
+        report.setReportFallbackTitle(statement.getValue());
+        report.setReportDetail(statement.getValue());
         report.setReportStep("Perform assertions");
 
         // Store reporter in AssertionEngine

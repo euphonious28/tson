@@ -1,6 +1,7 @@
 package com.euph28.tson.core.keyword;
 
 import com.euph28.tson.context.TSONContext;
+import com.euph28.tson.interpreter.Statement;
 import com.euph28.tson.reporter.TSONReporter;
 
 import java.util.ArrayList;
@@ -115,10 +116,10 @@ public abstract class Keyword {
      *
      * @param tsonContext  Context class that stores the variables related to the current running state
      * @param tsonReporter Reporter class to report execution result to
-     * @param value        Additional value for this {@link Keyword} provided in the TSON file
+     * @param statement        Additional value for this {@link Keyword} provided in the TSON file
      * @return Returns true if handle was successful
      */
-    public abstract boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, String value);
+    public abstract boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, Statement statement);
 
     /* ----- OVERRIDE: EQUALS ------------------------------ */
 
