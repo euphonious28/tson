@@ -3,9 +3,9 @@ package com.euph28.tson.restclientinterface.keyword;
 import com.euph28.tson.context.TSONContext;
 import com.euph28.tson.core.keyword.KeywordType;
 import com.euph28.tson.interpreter.Statement;
+import com.euph28.tson.reporter.TSONReporter;
 import com.euph28.tson.reporter.report.Report;
 import com.euph28.tson.reporter.report.ReportType;
-import com.euph28.tson.reporter.TSONReporter;
 import com.euph28.tson.restclientinterface.TSONRestClient;
 
 /**
@@ -52,6 +52,8 @@ public class KeywordSend extends KeywordBase {
         report.setReportType(ReportType.INFO);
         report.setReportFallbackTitle("Send " + statement.getValue());
         report.setReportStep(String.format("Send %s to %s", statement.getValue(), tsonRestClient.getRequestData().getRequestUrl()));
+        report.addAttachment("request.json", tsonRestClient.getRequestData().getRequestBody());
+        report.addAttachment("response.json", tsonRestClient.getResponseData().getResponseBody());
         return true;
     }
 }

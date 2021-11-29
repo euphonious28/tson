@@ -1,5 +1,9 @@
 package com.euph28.tson.reporter.report;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * An individual report entry
  */
@@ -32,6 +36,11 @@ public class Report {
     String reportStep;
 
     /**
+     * Map (Filename-Content) of attachments. Attachments are additional files that should be attached with the report
+     */
+    Map<String, String> reportAttachments = new HashMap<>();
+
+    /**
      * Severity/importance of the report
      */
     ReportType reportType;
@@ -49,7 +58,7 @@ public class Report {
      * @param reportType  Type of the report
      * @param reportTitle Title of the report from the user. This will be the information shown when seen in an overview.
      *                    Leave this as an empty String to use {@link #reportFallbackTitle}
-     * @param source       Source of the code that created the report
+     * @param source      Source of the code that created the report
      */
     Report(ReportType reportType, String reportTitle, ReportSource source) {
         this.reportType = reportType;
@@ -112,5 +121,36 @@ public class Report {
 
     public ReportSource getSource() {
         return source;
+    }
+
+    /* ----- ATTACHMENTS ------------------------------ */
+
+    /**
+     * Add an attachment to the report
+     *
+     * @param attachmentName Name of attachment (file name)
+     * @param content        Content of attachment
+     */
+    public void addAttachment(String attachmentName, String content) {
+        reportAttachments.put(attachmentName, content);
+    }
+
+    /**
+     * Retrieve an attachment
+     *
+     * @param attachmentName Name of attachment to retrieve
+     * @return Attachment content. Returns an empty String if there is no valid attachment
+     */
+    public String getAttachment(String attachmentName) {
+        return reportAttachments.getOrDefault(attachmentName, "");
+    }
+
+    /**
+     * Retrieve the set of attachment names
+     *
+     * @return Set of attachment names
+     */
+    public Set<String> getAttachmentNames() {
+        return reportAttachments.keySet();
     }
 }
