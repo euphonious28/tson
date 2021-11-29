@@ -70,6 +70,7 @@ public class TSONContext implements KeywordProvider {
         // Initialize keywords
         keywordList.add(new RequestVariable());
         keywordList.add(new ResponseVariable());
+        keywordList.add(new CustomVariable());
         keywordList.add(new PropertyId());
         keywordList.add(new PropertyDescription());
         keywordList.add(new Sleep());
