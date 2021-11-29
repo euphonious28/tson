@@ -51,8 +51,8 @@ public class PropertyId extends Keyword {
         // Report
         Report report = tsonReporter.getReport();
         report.setReportType(ReportType.TRACE);
-        report.setReportFallbackTitle("Set test ID to: " + statement);
-        report.setReportDetail(String.format("Create property variable \"%s\" with value \"%s\"", key, statement));
+        report.setReportFallbackTitle("Set test ID to: " + statement.getValue());
+        report.setReportDetail(String.format("Create property variable \"%s\" with value \"%s\"", key, statement.getValue()));
         return true;
     }
 }

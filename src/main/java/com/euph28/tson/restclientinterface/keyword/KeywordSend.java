@@ -50,8 +50,8 @@ public class KeywordSend extends KeywordBase {
         // Report
         Report report = tsonReporter.getReport();
         report.setReportType(ReportType.INFO);
-        report.setReportFallbackTitle("Send " + statement);
-        report.setReportStep(String.format("Send %s to %s", statement, tsonRestClient.getRequestData().getRequestUrl()));
+        report.setReportFallbackTitle("Send " + statement.getValue());
+        report.setReportStep(String.format("Send %s to %s", statement.getValue(), tsonRestClient.getRequestData().getRequestUrl()));
         return true;
     }
 }

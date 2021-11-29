@@ -61,7 +61,7 @@ public class ResponseVariable extends Keyword {
             String[] splitValues = split(entry, '=', true);
             // Error check: entry is invalid (not enough/too many parts)
             if (splitValues.length != 2) {
-                logger.error("Invalid number of parameters (should be 2) for response variable: " + statement);
+                logger.error("Invalid number of parameters (should be 2) for response variable: " + statement.getValue());
                 continue;
             }
 
@@ -70,7 +70,7 @@ public class ResponseVariable extends Keyword {
 
             // Error check: invalid value
             if (pathValue.isEmpty()) {
-                logger.error("No JSON value found for response variable: " + statement);
+                logger.error("No JSON value found for response variable: " + statement.getValue());
                 continue;
             }
 
