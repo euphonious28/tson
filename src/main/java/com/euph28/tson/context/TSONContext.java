@@ -1,17 +1,14 @@
 package com.euph28.tson.context;
 
-import com.euph28.tson.context.keyword.PropertyDescription;
-import com.euph28.tson.context.keyword.PropertyId;
-import com.euph28.tson.context.keyword.RequestVariable;
-import com.euph28.tson.context.keyword.ResponseVariable;
+import com.euph28.tson.context.keyword.*;
 import com.euph28.tson.context.provider.ContentProvider;
 import com.euph28.tson.context.provider.JsonValueProvider;
 import com.euph28.tson.context.provider.StringMapProvider;
 import com.euph28.tson.context.restdata.RequestData;
 import com.euph28.tson.context.restdata.ResponseData;
-import com.euph28.tson.interpreter.TSONInterpreter;
 import com.euph28.tson.core.keyword.Keyword;
 import com.euph28.tson.core.keyword.KeywordProvider;
+import com.euph28.tson.interpreter.TSONInterpreter;
 import com.euph28.tson.restclientinterface.TSONRestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,6 +72,7 @@ public class TSONContext implements KeywordProvider {
         keywordList.add(new ResponseVariable());
         keywordList.add(new PropertyId());
         keywordList.add(new PropertyDescription());
+        keywordList.add(new Sleep());
     }
 
     public TSONContext(TSONInterpreter tsonInterpreter, TSONRestClient tsonRestClient) {
