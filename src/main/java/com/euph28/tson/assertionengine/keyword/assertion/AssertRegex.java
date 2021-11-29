@@ -67,12 +67,12 @@ public class AssertRegex extends PathValueAssertion {
     }
 
     @Override
-    public String getDescriptionShort() {
+    public String getLspDescriptionShort() {
         return "Assert that value matches regex";
     }
 
     @Override
-    public String getDescriptionLong() {
+    public String getLspDescriptionLong() {
         return "Asserts that value located at a JSON path matches the provided regex.\n"
                 + "Usage\t: <jsonPath>=<expectedRegex>\n"
                 + "Example\t: body.item.0.subItem=regex\n"

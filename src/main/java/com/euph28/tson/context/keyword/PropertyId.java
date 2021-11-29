@@ -4,6 +4,7 @@ import com.euph28.tson.context.TSONContext;
 import com.euph28.tson.context.VariableType;
 import com.euph28.tson.core.keyword.Keyword;
 import com.euph28.tson.core.keyword.KeywordType;
+import com.euph28.tson.interpreter.Statement;
 import com.euph28.tson.reporter.report.Report;
 import com.euph28.tson.reporter.report.ReportType;
 import com.euph28.tson.reporter.TSONReporter;
@@ -26,12 +27,12 @@ public class PropertyId extends Keyword {
     }
 
     @Override
-    public String getDescriptionShort() {
+    public String getLspDescriptionShort() {
         return "Set the ID of this test";
     }
 
     @Override
-    public String getDescriptionLong() {
+    public String getLspDescriptionLong() {
         return "Set the ID of this test. Subsequent calls will override the existing ID";
     }
 
@@ -41,17 +42,17 @@ public class PropertyId extends Keyword {
     }
 
     @Override
-    public boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, String value) {
+    public boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, Statement statement) {
         String key = "id";
 
         // Add variable
-        tsonContext.addVariable(VariableType.PROPERTY, key, value);
+        tsonContext.addVariable(VariableType.PROPERTY, key, statement.getValue());
 
         // Report
         Report report = tsonReporter.getReport();
         report.setReportType(ReportType.TRACE);
-        report.setReportFallbackTitle("Set test ID to: " + value);
-        report.setReportDetail(String.format("Create property variable \"%s\" with value \"%s\"", key, value));
+        report.setReportFallbackTitle("Set test ID to: " + statement.getValue());
+        report.setReportDetail(String.format("Create property variable \"%s\" with value \"%s\"", key, statement.getValue()));
         return true;
     }
 }

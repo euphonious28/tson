@@ -68,12 +68,12 @@ public class AssertEqual extends PathValueAssertion {
     }
 
     @Override
-    public String getDescriptionShort() {
+    public String getLspDescriptionShort() {
         return "Assert that value is equal";
     }
 
     @Override
-    public String getDescriptionLong() {
+    public String getLspDescriptionLong() {
         return "Asserts that value located at a JSON path is equal to the provided value.\n"
                 + "Usage\t: <jsonPath>=<expectedValue>\n"
                 + "Example\t: body.item.0.subItem=text\n"

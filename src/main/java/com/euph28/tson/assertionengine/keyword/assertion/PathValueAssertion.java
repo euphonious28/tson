@@ -2,6 +2,7 @@ package com.euph28.tson.assertionengine.keyword.assertion;
 
 import com.euph28.tson.assertionengine.TSONAssertionEngine;
 import com.euph28.tson.context.TSONContext;
+import com.euph28.tson.interpreter.Statement;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
@@ -142,9 +143,9 @@ public abstract class PathValueAssertion extends AssertionBase {
 
     /* ----- OVERRIDE: ASSERTION BASE ------------------------------ */
     @Override
-    protected boolean handleAssertion(TSONContext tsonContext, String value) {
+    protected boolean handleAssertion(TSONContext tsonContext, Statement statement) {
         // Split into entries
-        String[] values = split(value, getEntryDelimiter(), false);
+        String[] values = split(statement.getValue(), getEntryDelimiter(), false);
 
         /* ===== HANDLING OF INDIVIDUAL ENTRY ===== */
         for (String entry : values) {

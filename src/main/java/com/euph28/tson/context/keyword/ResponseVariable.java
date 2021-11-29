@@ -4,6 +4,7 @@ import com.euph28.tson.context.TSONContext;
 import com.euph28.tson.context.VariableType;
 import com.euph28.tson.core.keyword.Keyword;
 import com.euph28.tson.core.keyword.KeywordType;
+import com.euph28.tson.interpreter.Statement;
 import com.euph28.tson.reporter.report.Report;
 import com.euph28.tson.reporter.report.ReportType;
 import com.euph28.tson.reporter.TSONReporter;
@@ -27,12 +28,12 @@ public class ResponseVariable extends Keyword {
     }
 
     @Override
-    public String getDescriptionShort() {
+    public String getLspDescriptionShort() {
         return "Create variable from JSON response body";
     }
 
     @Override
-    public String getDescriptionLong() {
+    public String getLspDescriptionLong() {
         return "Create a variable from the JSON response body based on JSON path.\n"
                 + "Usage\t: <variableName>=<jsonPath>\n"
                 + "Example\t: textValue=body.item.0.value"
@@ -45,14 +46,14 @@ public class ResponseVariable extends Keyword {
     }
 
     @Override
-    public boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, String value) {
+    public boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, Statement statement) {
         // Update report
         Report report = tsonReporter.getReport();
         report.setReportType(ReportType.INFO);
         report.setReportFallbackTitle("Create variable from response");
 
         // Split into entries
-        String[] values = split(tsonContext.resolveContent(value), ' ', true);
+        String[] values = split(tsonContext.resolveContent(statement.getValue()), ' ', true);
 
         /* ===== HANDLING OF INDIVIDUAL ENTRY ===== */
         for (String entry : values) {
@@ -60,7 +61,7 @@ public class ResponseVariable extends Keyword {
             String[] splitValues = split(entry, '=', true);
             // Error check: entry is invalid (not enough/too many parts)
             if (splitValues.length != 2) {
-                logger.error("Invalid number of parameters (should be 2) for response variable: " + value);
+                logger.error("Invalid number of parameters (should be 2) for response variable: " + statement.getValue());
                 continue;
             }
 
@@ -69,7 +70,7 @@ public class ResponseVariable extends Keyword {
 
             // Error check: invalid value
             if (pathValue.isEmpty()) {
-                logger.error("No JSON value found for response variable: " + value);
+                logger.error("No JSON value found for response variable: " + statement.getValue());
                 continue;
             }
 

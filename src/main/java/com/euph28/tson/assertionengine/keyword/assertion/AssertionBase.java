@@ -11,6 +11,7 @@ import com.euph28.tson.reporter.report.Report;
 import com.euph28.tson.reporter.report.ReportType;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -102,19 +103,19 @@ public abstract class AssertionBase extends Keyword {
      * and {@link #resultFail(String, String, String)} to report assertion results
      *
      * @param tsonContext Context class that stores the variables related to the current running state
-     * @param value       Additional value for this {@link Keyword} provided in the TSON file
+     * @param statement       Additional value for this {@link Keyword} provided in the TSON file
      * @return Returns true if handle was successful
      */
-    protected abstract boolean handleAssertion(TSONContext tsonContext, String value);
+    protected abstract boolean handleAssertion(TSONContext tsonContext, Statement statement);
 
     /* ----- OVERRIDE: KEYWORD BASE ------------------------------ */
 
     /**
-     * Calls {@link #handleAssertion(TSONContext, String)} and returns results to {@link #tsonAssertionEngine}. <br/>
+     * Calls {@link #handleAssertion(TSONContext, Statement)} and returns results to {@link #tsonAssertionEngine}. <br/>
      * Do not override unless you plan to alter how data is returned to {@link #tsonAssertionEngine}
      */
     @Override
-    public boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, String value) {
+    public boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, Statement statement) {
         // Store reporter
         this.tsonReporter = tsonAssertionEngine.getReporter(tsonReporter);
 
@@ -124,7 +125,7 @@ public abstract class AssertionBase extends Keyword {
         report.setReportStep("Perform assertions");
 
         // Perform assertion (and report assertion results)
-        boolean status = handleAssertion(tsonContext, value);
+        boolean status = handleAssertion(tsonContext, statement);
 
         // Check if AssertionEngine should publish result (publish if upcoming keyword is action and not assertion)
         Statement nextStatement = tsonContext.getTsonInterpreter().peekType(
@@ -140,5 +141,12 @@ public abstract class AssertionBase extends Keyword {
     @Override
     public KeywordType getKeywordType() {
         return KeywordType.ASSERTION;
+    }
+
+    @Override
+    public List<String> getLspTags() {
+        List<String> result = super.getLspTags();
+        result.add("Assertion");
+        return result;
     }
 }
