@@ -145,7 +145,7 @@ public abstract class PathValueAssertion extends AssertionBase {
     @Override
     protected boolean handleAssertion(TSONContext tsonContext, Statement statement) {
         // Split into entries
-        String[] values = split(statement.getValue(), getEntryDelimiter(), false);
+        String[] values = split(tsonContext.resolveContent(statement.getValue()), getEntryDelimiter(), false);
 
         /* ===== HANDLING OF INDIVIDUAL ENTRY ===== */
         for (String entry : values) {

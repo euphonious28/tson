@@ -90,7 +90,6 @@ public abstract class AssertionBase extends Keyword {
      *                    Wildcards can be used to retrieve all values in an array
      * @return Map of path-to-value of resolved values. Returns {@code null} if path was invalid
      */
-    // TODO: Refactor this to be a general getValue that can use Context's ContentProvider
     protected Map<String, String> getValueFromJson(TSONContext tsonContext, String jsonPath) {
         JsonValueProvider jsonValueProvider = new JsonValueProvider();
         return jsonValueProvider.getValuesFromJson(tsonContext, jsonPath);
@@ -103,7 +102,7 @@ public abstract class AssertionBase extends Keyword {
      * and {@link #resultFail(String, String, String)} to report assertion results
      *
      * @param tsonContext Context class that stores the variables related to the current running state
-     * @param statement       Additional value for this {@link Keyword} provided in the TSON file
+     * @param statement   Additional value for this {@link Keyword} provided in the TSON file
      * @return Returns true if handle was successful
      */
     protected abstract boolean handleAssertion(TSONContext tsonContext, Statement statement);
