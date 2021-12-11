@@ -45,6 +45,7 @@ public class KeywordSend extends KeywordBase {
     public boolean handle(TSONContext tsonContext, TSONReporter tsonReporter, Statement statement) {
         // Send request
         tsonRestClient.setRequestBody(statement.getValue(), true);
+        tsonRestClient.transformRequestBody(tsonContext::resolveContent);
         tsonRestClient.send();
 
         // Report

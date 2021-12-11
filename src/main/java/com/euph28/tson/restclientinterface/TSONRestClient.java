@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Main access point for the TSON Rest Client
@@ -274,5 +275,14 @@ public class TSONRestClient implements KeywordProvider {
         } else {
             setRequestBody(requestBody);
         }
+    }
+
+    /**
+     * Transform the body content that will be sent in the request
+     *
+     * @param fn Function to use to transform the body
+     */
+    public void transformRequestBody(Function<String, String> fn) {
+        setRequestBody(fn.apply(requestBody));
     }
 }
