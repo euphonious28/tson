@@ -98,6 +98,7 @@ public class TSONRunner {
 
         // Variables
         TSONReporter tsonReporter = new TSONReporter();
+        tsonReporter.getReport().setReportFallbackTitle(filename);
         TSONReporter lastActionReporter = tsonReporter;
 
         // Parse content
