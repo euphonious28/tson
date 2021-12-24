@@ -28,11 +28,11 @@ import java.util.function.Function;
  */
 public class TSONRestClient implements KeywordProvider {
 
-    final static String PROPERTY_REQUEST_URL = "restclient.url";
-    final static String PROPERTY_REQUEST_PORT = "restclient.port";
-    final static String PROPERTY_REQUEST_ROUTE = "restclient.route";
-    final static String PROPERTY_REQUEST_VERB = "restclient.verb";
-    final static String PROPERTY_REQUEST_BODY_PREFIX = "restclient.bodyprefix";
+    public final static String PROPERTY_REQUEST_URL = "restclient.url";
+    public final static String PROPERTY_REQUEST_PORT = "restclient.port";
+    public final static String PROPERTY_REQUEST_ROUTE = "restclient.route";
+    public final static String PROPERTY_REQUEST_VERB = "restclient.verb";
+    public final static String PROPERTY_REQUEST_BODY_PREFIX = "restclient.bodyprefix";
 
     /* ----- VARIABLES ------------------------------ */
     final Logger logger = LoggerFactory.getLogger(TSONRestClient.class);
