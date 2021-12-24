@@ -56,12 +56,12 @@ public class TSONRestClient implements KeywordProvider {
     /**
      * Request data of the last sent request
      */
-    RequestData requestData;
+    RequestData requestData = new RequestData("", "");
 
     /**
      * Response data of the last received response
      */
-    ResponseData responseData;
+    ResponseData responseData = new ResponseData(-1, "", 0);
 
     /* ----- VARIABLES: LISTENERS ------------------------------ */
     /**
@@ -80,6 +80,9 @@ public class TSONRestClient implements KeywordProvider {
     public TSONRestClient(TSONContext tsonContext, ContentProvider contentProvider) {
         this.contentProvider = contentProvider;
         this.tsonContext = tsonContext;
+
+        // Link to context
+        tsonContext.setTsonRestClient(this);
 
         // Generate default properties
         tsonContext.addVariableIfNotExists(VariableType.PROPERTY, PROPERTY_REQUEST_URL, "localhost");
