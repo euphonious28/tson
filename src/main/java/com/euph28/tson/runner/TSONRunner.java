@@ -55,7 +55,7 @@ public class TSONRunner {
      * @param workspace  Workspace folder that should be used for resolving paths
      * @param properties Custom properties to be inserted into {@link TSONContext}
      */
-    TSONRunner(File workspace, Properties properties) {
+    public TSONRunner(File workspace, Properties properties) {
         // Store workspace
         this.workspace = workspace;
 
@@ -82,7 +82,7 @@ public class TSONRunner {
      *
      * @param workspace Workspace folder that should be used for resolving paths
      */
-    TSONRunner(File workspace) {
+    public TSONRunner(File workspace) {
         this(workspace, new Properties());
     }
 
