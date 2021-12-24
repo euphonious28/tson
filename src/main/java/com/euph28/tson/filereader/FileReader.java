@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
@@ -18,9 +19,9 @@ public class FileReader implements ContentProvider {
     final Logger logger = LoggerFactory.getLogger(FileReader.class);
 
     /**
-     * Prefix to the file path, used for specifying a root directory to add before the filename
+     * Root directory to resolve files from
      */
-    String filePrefix = "";
+    Path rootDirectory;
 
     /* ----- CONSTRUCTOR ------------------------------ */
 
@@ -28,15 +29,25 @@ public class FileReader implements ContentProvider {
      * Create a file reader capable of reading file content to String
      */
     public FileReader() {
+        this(Paths.get(""));
     }
 
     /**
      * Create a file reader capable of reading file content to String
      *
-     * @param rootDirectory Root directory to add to the front of the filename
+     * @param rootDirectory Root directory to resolve files from
      */
     public FileReader(String rootDirectory) {
-        this.filePrefix = rootDirectory;
+        this(Paths.get(rootDirectory));
+    }
+
+    /**
+     * Create a file reader capable of reading file content to String
+     *
+     * @param rootDirectory Root directory to resolve files from
+     */
+    public FileReader(Path rootDirectory) {
+        this.rootDirectory = rootDirectory;
     }
 
     /* ----- METHODS ------------------------------ */
@@ -48,11 +59,11 @@ public class FileReader implements ContentProvider {
      * @return String with all the content within {@code filename}. Returns an empty {@code String} if reading failed
      */
     String readFile(String filename) {
-        filename = filePrefix + filename;
+        Path filepath = rootDirectory.resolve(filename);
         logger.trace("Reading file: " + filename);
 
         try {
-            return new String(Files.readAllBytes(Paths.get(filename)));
+            return new String(Files.readAllBytes(filepath));
         } catch (IOException e) {
             logger.warn("Failed to read file: " + filename, e);
         }
