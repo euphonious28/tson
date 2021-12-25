@@ -4,6 +4,7 @@ import com.euph28.tson.core.keyword.Keyword;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -40,8 +41,8 @@ public class Statement {
      */
     public Statement(Keyword keyword, Map<String, String> properties, String value) {
         this.keyword = keyword;
-        this.properties = properties;
-        this.value = value;
+        this.properties = properties != null ? properties : new HashMap<>();
+        this.value = value != null ? value : "";
     }
 
     /* ----- GETTERS ------------------------------ */

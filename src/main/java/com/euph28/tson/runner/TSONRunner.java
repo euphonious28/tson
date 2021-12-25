@@ -72,7 +72,7 @@ public class TSONRunner {
         tsonInterpreter.addContentProvider(contentProvider);
 
         // Load properties into context
-        for(String key : properties.stringPropertyNames()) {
+        for (String key : properties.stringPropertyNames()) {
             tsonContext.addVariable(VariableType.PROPERTY, key, properties.getProperty(key));
         }
     }
@@ -108,10 +108,15 @@ public class TSONRunner {
         }
 
         // Run statements
-        // TODO: Wrap in general try to avoid full failures
         while (!tsonInterpreter.isEof()) {
             // Get statement
             Statement statement = tsonInterpreter.getNext();
+
+            // Validity check of next statement
+            if (statement == null || statement.getKeyword() == null) {
+                logger.error("Next available statement is invalid. Skipping statement execution");
+                continue;
+            }
 
             // Select root reporter based on keyword type (for nesting items under SEND request)
             TSONReporter currentReporter;
@@ -135,12 +140,24 @@ public class TSONRunner {
                 lastActionReporter = subReporter;
             }
 
-            // Handle statement
-            statement.getKeyword().handle(
-                    tsonContext,
-                    subReporter,
-                    statement
-            );
+            // Handle statement, wrap in try-catch to handle any unexpected errors when handling statement
+            try {
+                statement.getKeyword().handle(
+                        tsonContext,
+                        subReporter,
+                        statement
+                );
+            } catch (Exception e) {
+                // Log error
+                logger.error(String.format(
+                        "Error encountered when handling statement: [%s] %s",
+                        statement.getKeyword().getCode(),
+                        statement.getValue()
+                ), e);
+                // Set report to error
+                subReporter.getReport().setReportType(ReportType.ERROR);
+                subReporter.getReport().setReportDetail("Error encountered when handling statement. Check logs for details");
+            }
         }
 
         // Output result
