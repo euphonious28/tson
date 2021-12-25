@@ -17,6 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Properties;
 
 /**
@@ -72,9 +75,7 @@ public class TSONRunner {
         tsonInterpreter.addContentProvider(contentProvider);
 
         // Load properties into context
-        for (String key : properties.stringPropertyNames()) {
-            tsonContext.addVariable(VariableType.PROPERTY, key, properties.getProperty(key));
-        }
+        loadProperties(properties);
     }
 
     /**
@@ -84,6 +85,78 @@ public class TSONRunner {
      */
     public TSONRunner(File workspace) {
         this(workspace, new Properties());
+    }
+
+    /* ----- UTILITY ------------------------------ */
+
+    /**
+     * Load properties from files into {@link #tsonContext}. Properties are loaded with the following order, with the later properties
+     * overriding the earlier: <br/>
+     * 1. Global properties, located at {@code <tsonFolder>/global.properties}<br/>
+     * 2. Local properties, located at {@code <tsonFolder>/local.properties}<br/>
+     * 3. Workspace properties, located at {@code <workspaceFolder>/local.properties}<br/>
+     * 4. Custom properties, provided in argument
+     *
+     * @param customProperties Custom properties to be loaded. This is loaded last and overrides loaded properties
+     */
+    void loadProperties(Properties customProperties) {
+        Properties properties = new Properties();
+
+        // 1. Global properties
+        try {
+            File globalPropertiesFile = new File(TSONRunner.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+                    .getParentFile()
+                    .toPath()
+                    .resolve("global.properties")
+                    .toFile();
+            if (globalPropertiesFile.exists() && globalPropertiesFile.isFile()) {
+                properties.load(new FileInputStream(globalPropertiesFile));
+                logger.trace(String.format("Loaded global properties file (%s). Total of %d properties to be added", globalPropertiesFile, properties.stringPropertyNames().size()));
+            } else {
+                logger.trace("Global properties file not found: " + globalPropertiesFile);
+            }
+        } catch (URISyntaxException | IOException e) {
+            logger.error("Failed to load global properties", e);
+        }
+
+        // 2. Local properties
+        try {
+            File localPropertiesFile = new File(TSONRunner.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+                    .getParentFile()
+                    .toPath()
+                    .resolve("local.properties")
+                    .toFile();
+            if (localPropertiesFile.exists() && localPropertiesFile.isFile()) {
+                properties.load(new FileInputStream(localPropertiesFile));
+                logger.trace(String.format("Loaded local properties file (%s). Total of %d properties to be added", localPropertiesFile, properties.stringPropertyNames().size()));
+            } else {
+                logger.trace("Local properties file not found: " + localPropertiesFile);
+            }
+        } catch (URISyntaxException | IOException e) {
+            logger.error("Failed to load local properties", e);
+        }
+
+        // 3. Workspace properties
+        try {
+            File workspacePropertiesFile = workspace.toPath().resolve("local.properties").toFile();
+            if (workspacePropertiesFile.exists() && workspacePropertiesFile.isFile()) {
+                properties.load(new FileInputStream(workspacePropertiesFile));
+                logger.trace(String.format("Loaded workspace properties file (%s). Total of %d properties to be added", workspacePropertiesFile, properties.stringPropertyNames().size()));
+            } else {
+                logger.trace("Workspace properties file not found: " + workspacePropertiesFile);
+            }
+        } catch (IOException e) {
+            logger.error("Failed to load workspace properties", e);
+        }
+
+        // 4. Custom properties
+        properties.putAll(customProperties);
+
+        // Load properties
+        for (String key : properties.stringPropertyNames()) {
+            tsonContext.addVariable(VariableType.PROPERTY, key, properties.getProperty(key));
+        }
+        logger.debug(String.format("Loaded %d properties to TSONContext", properties.stringPropertyNames().size()));
     }
 
     /* ----- METHODS ------------------------------ */
