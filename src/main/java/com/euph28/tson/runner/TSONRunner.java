@@ -191,6 +191,9 @@ public class TSONRunner {
                 continue;
             }
 
+            // Log execution
+            logger.info(String.format("Executing Statement: [%s] %s", statement.getKeyword().getCode(), statement.getValue()));
+
             // Select root reporter based on keyword type (for nesting items under SEND request)
             TSONReporter currentReporter;
             if (statement.getKeyword().getKeywordType() == KeywordType.ACTION | statement.getKeyword().getKeywordType() == KeywordType.NO_IMPACT) {
