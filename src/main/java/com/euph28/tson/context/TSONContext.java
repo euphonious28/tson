@@ -99,6 +99,19 @@ public class TSONContext implements KeywordProvider {
         }
     }
 
+    /**
+     * Add a variable if it does not already exist
+     *
+     * @param variableType Type of variable to be stored. See the documentation in {@link VariableType} for details
+     * @param key          Key to be used for retrieving the value later
+     * @param value        Value to be stored
+     */
+    public void addVariableIfNotExists(VariableType variableType, String key, String value) {
+        if (!hasContent(variableType.prefix + "." + key)) {
+            addVariable(variableType, key, value);
+        }
+    }
+
     /* ----- METHODS: CONTENT PROVIDER ------------------------------ */
 
     public void addContentProvider(ContentProvider contentProvider) {
@@ -166,6 +179,16 @@ public class TSONContext implements KeywordProvider {
 
         // Retrieve from provider and return (remove the prefix + .)
         return contentProvider.getContent(this, text.substring(contentProvider.getPrefix().length() + 1));
+    }
+
+    /**
+     * Checks if there is content from content text (text with content tag)
+     *
+     * @param text Text to check for content with. Text should have the format of {@code <content-provider-prefix>.<key>}
+     * @return Returns {@code true} if there is content, returns {@code false} if otherwise
+     */
+    public boolean hasContent(String text) {
+        return !getContent(text).isEmpty();
     }
 
     /* ----- GETTERS & SETTERS: REQUEST, RESPONSE, INTERPRETER ------------------------------ */

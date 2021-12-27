@@ -1,5 +1,7 @@
 package com.euph28.tson.restclientinterface;
 
+import com.euph28.tson.context.TSONContext;
+import com.euph28.tson.context.VariableType;
 import com.euph28.tson.context.restdata.RequestData;
 import com.euph28.tson.context.restdata.ResponseData;
 import com.euph28.tson.core.keyword.Keyword;
@@ -25,6 +27,13 @@ import java.util.function.Function;
  * Main access point for the TSON Rest Client
  */
 public class TSONRestClient implements KeywordProvider {
+
+    public final static String PROPERTY_REQUEST_URL = "restclient.url";
+    public final static String PROPERTY_REQUEST_PORT = "restclient.port";
+    public final static String PROPERTY_REQUEST_ROUTE = "restclient.route";
+    public final static String PROPERTY_REQUEST_VERB = "restclient.verb";
+    public final static String PROPERTY_REQUEST_BODY_PREFIX = "restclient.bodyprefix";
+
     /* ----- VARIABLES ------------------------------ */
     final Logger logger = LoggerFactory.getLogger(TSONRestClient.class);
 
@@ -33,27 +42,12 @@ public class TSONRestClient implements KeywordProvider {
      */
     ContentProvider contentProvider;
 
+    /**
+     * TSONContext for storing/retrieving properties
+     */
+    TSONContext tsonContext;
+
     /* ----- VARIABLES: REST REQUEST ------------------------------ */
-    /**
-     * Request variable: Target hostname to send requests to
-     */
-    String requestUrl = "localhost";
-
-    /**
-     * Request variable: Target port to send requests to
-     */
-    int requestPort = 8080;
-
-    /**
-     * Request variable: Target route to send requests to
-     */
-    String requestRoute = "/";
-
-    /**
-     * Request variable: Verb to be used when sending request
-     */
-    String requestVerb = "POST";
-
     /**
      * Request variable: Content body to send in request
      */
@@ -63,12 +57,12 @@ public class TSONRestClient implements KeywordProvider {
     /**
      * Request data of the last sent request
      */
-    RequestData requestData;
+    RequestData requestData = new RequestData("", "");
 
     /**
      * Response data of the last received response
      */
-    ResponseData responseData;
+    ResponseData responseData = new ResponseData(-1, "", 0);
 
     /* ----- VARIABLES: LISTENERS ------------------------------ */
     /**
@@ -81,10 +75,23 @@ public class TSONRestClient implements KeywordProvider {
     /**
      * Create a REST client adapter to provide and retrieve REST client info
      *
-     * @param contentProvider Content provider that is able to load content from file
+     * @param tsonContext     TSONContext for the run. Used for retrieving/storing properties
+     * @param contentProvider Content provider that is able to load content from file. The content provider should
+     *                        point to the workspace
      */
-    public TSONRestClient(ContentProvider contentProvider) {
+    public TSONRestClient(TSONContext tsonContext, ContentProvider contentProvider) {
         this.contentProvider = contentProvider;
+        this.tsonContext = tsonContext;
+
+        // Link to context
+        tsonContext.setTsonRestClient(this);
+
+        // Generate default properties
+        tsonContext.addVariableIfNotExists(VariableType.PROPERTY, PROPERTY_REQUEST_URL, "localhost");
+        tsonContext.addVariableIfNotExists(VariableType.PROPERTY, PROPERTY_REQUEST_PORT, "8080");
+        tsonContext.addVariableIfNotExists(VariableType.PROPERTY, PROPERTY_REQUEST_ROUTE, "/");
+        tsonContext.addVariableIfNotExists(VariableType.PROPERTY, PROPERTY_REQUEST_VERB, "GET");
+        tsonContext.addVariableIfNotExists(VariableType.PROPERTY, PROPERTY_REQUEST_BODY_PREFIX, "");
     }
 
     /* ----- OVERRIDE: KeywordProvider ------------------------------ */
@@ -102,9 +109,16 @@ public class TSONRestClient implements KeywordProvider {
      * Send the REST request
      */
     public void send() {
+        // Retrieve values from property
+        String requestUrl = tsonContext.getContent(VariableType.PROPERTY.getPrefix() + "." + PROPERTY_REQUEST_URL);
+        String requestPort = tsonContext.getContent(VariableType.PROPERTY.getPrefix() + "." + PROPERTY_REQUEST_PORT);
+        String requestRoute = tsonContext.getContent(VariableType.PROPERTY.getPrefix() + "." + PROPERTY_REQUEST_ROUTE);
+        String requestVerb = tsonContext.getContent(VariableType.PROPERTY.getPrefix() + "." + PROPERTY_REQUEST_VERB);
+
         // Connection
         HttpURLConnection connection;
-        String urlString = requestUrl
+        String urlString = "http://"
+                + requestUrl
                 + ":"
                 + requestPort
                 + (requestRoute.startsWith("/") ? "" : "/")
@@ -223,7 +237,7 @@ public class TSONRestClient implements KeywordProvider {
      * @param requestUrl Hostname to send the request to
      */
     public void setRequestUrl(String requestUrl) {
-        this.requestUrl = requestUrl;
+        tsonContext.addVariable(VariableType.PROPERTY, PROPERTY_REQUEST_URL, requestUrl);
     }
 
     /**
@@ -231,8 +245,8 @@ public class TSONRestClient implements KeywordProvider {
      *
      * @param requestPort Port to send the request to
      */
-    public void setRequestPort(int requestPort) {
-        this.requestPort = requestPort;
+    public void setRequestPort(String requestPort) {
+        tsonContext.addVariable(VariableType.PROPERTY, PROPERTY_REQUEST_PORT, requestPort);
     }
 
     /**
@@ -241,7 +255,7 @@ public class TSONRestClient implements KeywordProvider {
      * @param requestRoute Route to send the request to
      */
     public void setRequestRoute(String requestRoute) {
-        this.requestRoute = requestRoute;
+        tsonContext.addVariable(VariableType.PROPERTY, PROPERTY_REQUEST_ROUTE, requestRoute);
     }
 
     /**
@@ -250,7 +264,7 @@ public class TSONRestClient implements KeywordProvider {
      * @param requestVerb Verb to be used when sending request
      */
     public void setRequestVerb(String requestVerb) {
-        this.requestVerb = requestVerb;
+        tsonContext.addVariable(VariableType.PROPERTY, PROPERTY_REQUEST_VERB, requestVerb);
     }
 
     /**
@@ -270,8 +284,10 @@ public class TSONRestClient implements KeywordProvider {
      * @param useContentProvider Specifies if the {@code requestBody} should be sent to the {@link ContentProvider} to be resolved
      */
     public void setRequestBody(String requestBody, boolean useContentProvider) {
+        String requestBodyPrefix = tsonContext.getContent(VariableType.PROPERTY.getPrefix() + "." + PROPERTY_REQUEST_BODY_PREFIX);
+
         if (useContentProvider) {
-            setRequestBody(contentProvider.getContent(requestBody));
+            setRequestBody(contentProvider.getContent(requestBodyPrefix + requestBody));
         } else {
             setRequestBody(requestBody);
         }
