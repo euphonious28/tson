@@ -187,7 +187,7 @@ public class JsonValueProvider implements ContentProvider {
     }
 
     @Override
-    public String getContent(TSONContext tsonContext, String key) {
-        return getValueFromJson(tsonContext, key);
+    public Map<String, String> getContent(TSONContext tsonContext, String key) {
+        return getValuesFromJson(tsonContext, key);
     }
 }

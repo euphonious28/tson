@@ -110,10 +110,10 @@ public class TSONRestClient implements KeywordProvider {
      */
     public void send() {
         // Retrieve values from property
-        String requestUrl = tsonContext.getContent(VariableType.PROPERTY.getPrefix() + "." + PROPERTY_REQUEST_URL);
-        String requestPort = tsonContext.getContent(VariableType.PROPERTY.getPrefix() + "." + PROPERTY_REQUEST_PORT);
-        String requestRoute = tsonContext.getContent(VariableType.PROPERTY.getPrefix() + "." + PROPERTY_REQUEST_ROUTE);
-        String requestVerb = tsonContext.getContent(VariableType.PROPERTY.getPrefix() + "." + PROPERTY_REQUEST_VERB);
+        String requestUrl = tsonContext.getContent(VariableType.PROPERTY.getPrefix() + "." + PROPERTY_REQUEST_URL, false);
+        String requestPort = tsonContext.getContent(VariableType.PROPERTY.getPrefix() + "." + PROPERTY_REQUEST_PORT, false);
+        String requestRoute = tsonContext.getContent(VariableType.PROPERTY.getPrefix() + "." + PROPERTY_REQUEST_ROUTE, false);
+        String requestVerb = tsonContext.getContent(VariableType.PROPERTY.getPrefix() + "." + PROPERTY_REQUEST_VERB, false);
 
         // Connection
         HttpURLConnection connection;
@@ -284,7 +284,7 @@ public class TSONRestClient implements KeywordProvider {
      * @param useContentProvider Specifies if the {@code requestBody} should be sent to the {@link ContentProvider} to be resolved
      */
     public void setRequestBody(String requestBody, boolean useContentProvider) {
-        String requestBodyPrefix = tsonContext.getContent(VariableType.PROPERTY.getPrefix() + "." + PROPERTY_REQUEST_BODY_PREFIX);
+        String requestBodyPrefix = tsonContext.getContent(VariableType.PROPERTY.getPrefix() + "." + PROPERTY_REQUEST_BODY_PREFIX, false);
 
         if (useContentProvider) {
             setRequestBody(contentProvider.getContent(requestBodyPrefix + requestBody));
