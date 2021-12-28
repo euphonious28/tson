@@ -67,7 +67,7 @@ public class JsonValueProvider implements ContentProvider {
      *                    Otherwise, response data will be used instead
      * @return Map of path-to-value of resolved values. Returns {@code null} if path was invalid
      */
-    public Map<String, String> getValuesFromJson(TSONContext tsonContext, String jsonPath) {
+    Map<String, String> getValuesFromJson(TSONContext tsonContext, String jsonPath) {
         // Store original path for logging
         String originalPath = jsonPath;
 
@@ -121,7 +121,7 @@ public class JsonValueProvider implements ContentProvider {
                         iterationNodeMap.put(nodeMapKey + "/" + currentNodePath, value);
                     } else {
                         // Otherwise, log a warning
-                        logger.warn(String.format("Null value found when resolving pointer path \"%s\", provided by JSON path \"%s\"", nodeMapKey + "/" + currentNodePath, originalPath));
+                        logger.error(String.format("Null value found when resolving pointer path \"%s\", provided by JSON path \"%s\"", nodeMapKey + "/" + currentNodePath, originalPath));
                     }
                 }
             }
@@ -156,8 +156,9 @@ public class JsonValueProvider implements ContentProvider {
      *                    Starting the jsonPath with "{@code request.}" will result in request JSON being used.
      *                    Otherwise, response data will be used instead
      * @return Value located at path. Returns an empty String if path is invalid
+     * @deprecated Use {@link #getValuesFromJson(TSONContext, String)} instead
      */
-    public String getValueFromJson(TSONContext tsonContext, String jsonPath) {
+    String getValueFromJson(TSONContext tsonContext, String jsonPath) {
         // Store original path for logging
         String originalPath = jsonPath;
 
