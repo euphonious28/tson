@@ -2,7 +2,6 @@ package com.euph28.tson.assertionengine.keyword.assertion;
 
 import com.euph28.tson.assertionengine.TSONAssertionEngine;
 import com.euph28.tson.context.TSONContext;
-import com.euph28.tson.context.provider.JsonValueProvider;
 import com.euph28.tson.core.keyword.Keyword;
 import com.euph28.tson.core.keyword.KeywordType;
 import com.euph28.tson.interpreter.Statement;
@@ -91,8 +90,7 @@ public abstract class AssertionBase extends Keyword {
      * @return Map of path-to-value of resolved values. Returns {@code null} if path was invalid
      */
     protected Map<String, String> getValueFromJson(TSONContext tsonContext, String jsonPath) {
-        JsonValueProvider jsonValueProvider = new JsonValueProvider();
-        return jsonValueProvider.getValuesFromJson(tsonContext, jsonPath);
+        return tsonContext.getContent(jsonPath.startsWith("json.") ? jsonPath : "json." + jsonPath);
     }
 
     /* ----- METHODS ------------------------------ */
