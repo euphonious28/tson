@@ -160,7 +160,7 @@ public abstract class PathValueAssertion extends AssertionBase {
                 path = getPathFromExpression(splitValues);
             } catch (ArrayIndexOutOfBoundsException e) {
                 LoggerFactory.getLogger(this.getClass()).error("Failed to retrieve path from expression array: " + Arrays.toString(splitValues), e);
-                resultFail("Failed to retrieve path for expression: " + entry, "Failed to assert expression", entry);
+                resultFail("Failed to retrieve path for expression: " + entry, getStepDescription(splitValues), entry);
                 continue;
             }
 
@@ -169,13 +169,20 @@ public abstract class PathValueAssertion extends AssertionBase {
             // Error handling: Checking if values failed to be resolved
             if (actualValue == null) {
                 // TODO: Wrap this in another(?) try-catch
-                resultFail("Failed to retrieve values for JSON path: " + path, "Failed to assert expression", entry);
+                resultFail("Failed to retrieve values for JSON path: " + path, getStepDescription(splitValues), entry);
                 continue;
             }
 
             /* ===== VERIFY: NORMAL vs COUNT ===== */
             switch (splitValues.length) {
                 case 2: // Default setup, eg: path=value. Perform assertion individually for each value
+                    // Error checking: Report failure if there were no actual values (doesn't make sense for asserting nothing)
+                    if (actualValue.isEmpty()) {
+                        resultFail("Failed to retrieve any value for JSON path: " + path,
+                                getStepDescription(splitValues),
+                                entry
+                        );
+                    }
                     for (String key : actualValue.keySet()) {
                         // Wrap in try/catch in case expression is accessed without handling array index
                         try {
