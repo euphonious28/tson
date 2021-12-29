@@ -131,7 +131,7 @@ public class TSONInterpreter {
      *
      * @return List of {@link Keyword} provided
      */
-    List<Keyword> getKeywords() {
+    public List<Keyword> getKeywords() {
         return keywordProviderList
                 .stream()
                 .flatMap(provider -> provider.getKeywordList().stream())
