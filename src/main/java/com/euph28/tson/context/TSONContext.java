@@ -13,10 +13,8 @@ import com.euph28.tson.restclientinterface.TSONRestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Context class that stores all variables related to the current state
@@ -134,7 +132,7 @@ public class TSONContext implements KeywordProvider {
             int endIndex = text.indexOf(CONTENT_TAG_END, startIndex + 2);
 
             String contentText = text.substring(startIndex + 2, endIndex);
-            String resolvedText = getContent(contentText);
+            String resolvedText = getContent(contentText, false);
 
             text = text.substring(0, startIndex)
                     + (resolvedText.isEmpty() ? contentText : resolvedText)
@@ -147,38 +145,85 @@ public class TSONContext implements KeywordProvider {
     }
 
     /**
-     * Get content from content text (text within content tags).
+     * Get content from content text (text within content tags). This uses {@link #getContent(String)} but simplifies the result.
      * For resolving large text that has multiple content tags, use {@link #resolveContent(String)}
      *
-     * @param text Text to retrieve content with. Text should have the format of {@code <content-provider-prefix>.<key>}
+     * @param text                 Text to retrieve content with. Text should have the format of {@code <content-provider-prefix>.<key>}
+     * @param allowMultipleResults Specify behaviour if multiple results were found. Set to {@code true} to accept the first
+     *                             result if multiple were found and {@code false} to receive an empty String instead
      * @return Retrieved text from content provider.
      * Returns empty String if retrieval failed (no matching content provider or no content for key)
      */
-    public String getContent(String text) {
+    public String getContent(String text, boolean allowMultipleResults) {
+        // Retrieve all results from retriever
+        Map<String, String> fullResult = getContent(text);
+
+        // Return if there is only one item
+        switch (fullResult.size()) {
+            case 0:
+                return "";
+            case 1:
+                return fullResult.get(fullResult.keySet().stream().findFirst().orElse(""));
+            default:
+                if (!allowMultipleResults) {
+                    logger.warn("More than one result found when resolving content when it should only find one. Content text: " + text);
+                    return "";
+                } else {
+                    return fullResult.get(fullResult.keySet().stream().findFirst().orElse(""));
+                }
+        }
+    }
+
+    /**
+     * Get content from content text (text within content tags).
+     * For resolving large text that has multiple content tags, use {@link #resolveContent(String)}
+     *
+     * @param text Text to retrieve content with. Text can start with a prefix followed by a period to specify which
+     *             provider to use. Otherwise, all providers are searched instead
+     * @return Map of path to retrieved text. Paths will include the provider as a prefix
+     */
+    public Map<String, String> getContent(String text) {
         logger.trace("Retrieving content from provider for content text: " + text);
-        String[] splitText = text.split("\\.", 2);
+        Map<String, String> result = new LinkedHashMap<>();   // Result that will be populated and returned
 
-        // Early check: If there is not 2 parts in the text, there isn't enough to continue
-        if (splitText.length != 2) {
-            logger.debug(String.format("Retrieval of content from content provider for text \"%s\" failed due to invalid text structure", text));
-            return "";
-        }
+        /* 1. Retrieve possible prefix and key */
+        int periodIndex = text.indexOf('.');            // Index of first period, used for separating prefix from key
+        // Get prefix: text before first period
+        String prefix = text.substring(0, periodIndex > -1 ? periodIndex : 0);
+        // Key that is given to providers. This key is the same as the text arg but without prefix
+        // This is reverted to the text arg if the prefix is found invalid on a later step
+        String contentKey = text.substring(periodIndex + 1);
 
-        // Look for content provider
-        ContentProvider contentProvider = contentProviderList
+        /* 2. Create list of providers to resolve with (this sets up Step 3) */
+        // Retrieve using prefix (multiple is allowed if for some reason we have that scenario)
+        List<ContentProvider> targetContentProviderList = contentProviderList
                 .stream()
-                .filter(provider -> provider.getPrefix().equals(splitText[0]))
-                .findFirst()
-                .orElse(null);
-
-        // Error check: No content provider found
-        if (contentProvider == null) {
-            logger.debug(String.format("Retrieval of content from content provider for text \"%s\" failed due to invalid provider prefix", text));
-            return "";
+                .filter(provider -> provider.getPrefix().equals(prefix))
+                .collect(Collectors.toList());
+        // Default to all providers if there is no targets (no matching prefix) found
+        if (targetContentProviderList.isEmpty()) {
+            targetContentProviderList.addAll(contentProviderList);
+            contentKey = text;                                      // Revert content key to text if the prefix was invalid
         }
 
-        // Retrieve from provider and return (remove the prefix + .)
-        return contentProvider.getContent(this, text.substring(contentProvider.getPrefix().length() + 1));
+        /* 3. With the list of providers, retrieve contents from them */
+        for (ContentProvider provider : targetContentProviderList) {
+            Map<String, String> providerResult = provider.getContent(this, contentKey);
+            result.putAll(
+                    providerResult.entrySet()
+                            .stream()
+                            .collect(Collectors.toMap(
+                                    map -> provider.getPrefix() + "." + map.getKey(),
+                                    Map.Entry::getValue
+                            ))
+            );
+        }
+
+        // Log warning just in case
+        if (result.isEmpty()) {
+            logger.warn("No result found when resolving content: " + text);
+        }
+        return result;
     }
 
     /**

@@ -55,7 +55,13 @@ public class StringMapProvider implements ContentProvider {
     }
 
     @Override
-    public String getContent(TSONContext tsonContext, String key) {
-        return dataMap.getOrDefault(key, "");
+    public Map<String, String> getContent(TSONContext tsonContext, String key) {
+        Map<String, String> result = new HashMap<>();
+
+        if (dataMap.containsKey(key)) {
+            result.put(key, dataMap.get(key));
+        }
+
+        return result;
     }
 }

@@ -5,9 +5,9 @@ import com.euph28.tson.context.VariableType;
 import com.euph28.tson.core.keyword.Keyword;
 import com.euph28.tson.core.keyword.KeywordType;
 import com.euph28.tson.interpreter.Statement;
+import com.euph28.tson.reporter.TSONReporter;
 import com.euph28.tson.reporter.report.Report;
 import com.euph28.tson.reporter.report.ReportType;
-import com.euph28.tson.reporter.TSONReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +66,7 @@ public class ResponseVariable extends Keyword {
             }
 
             // Retrieve JSON path
-            String pathValue = tsonContext.getContent("json." + splitValues[1]);
+            String pathValue = tsonContext.getContent("json." + splitValues[1], false);
 
             // Error check: invalid value
             if (pathValue.isEmpty()) {

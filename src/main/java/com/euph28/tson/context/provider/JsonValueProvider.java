@@ -8,7 +8,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -65,7 +67,7 @@ public class JsonValueProvider implements ContentProvider {
      *                    Otherwise, response data will be used instead
      * @return Map of path-to-value of resolved values. Returns {@code null} if path was invalid
      */
-    public Map<String, String> getValuesFromJson(TSONContext tsonContext, String jsonPath) {
+    Map<String, String> getValuesFromJson(TSONContext tsonContext, String jsonPath) {
         // Store original path for logging
         String originalPath = jsonPath;
 
@@ -73,50 +75,58 @@ public class JsonValueProvider implements ContentProvider {
         String jsonContent = getJsonContent(tsonContext, jsonPath);
         jsonPath = updatePath(jsonPath);
 
-        // Retrieve value from jsonPath
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, JsonNode> nodeMap = new LinkedHashMap<>();
+        // Setup required variables
+        ObjectMapper objectMapper = new ObjectMapper();             // JSON library mapper
+        Map<String, JsonNode> nodeMap = new LinkedHashMap<>();      // Map of path-to-nodes that will be returned. This is traversed until path is resolved
+        String[] jsonPathSplit = jsonPath.split("/");         // List of paths to traverse
+
+        // Retrieve the first node
         try {
             // Initial node
             nodeMap.put("", objectMapper.readTree(jsonContent));
-
-            // Generate list of path to traverse
-            String[] jsonPathSplit = jsonPath.split("/");
-
-            // Traverse each path and update node
-            for (String path : jsonPathSplit) {
-                // Skip if empty (needed for first index due to path starting with "/", keeping it in case of human error)
-                if(path.isEmpty()) {
-                    continue;
-                }
-
-                // Updated node map, will replace the original at end of each iteration
-                Map<String, JsonNode> updatedNodeMap = new LinkedHashMap<>();
-
-                // Traverse each node to traverse each path (handles splitting when wildcard is present)
-                for (String nodeMapKey : nodeMap.keySet()) {
-                    JsonNode node = nodeMap.get(nodeMapKey);
-
-                    if (path.equals("*") && node.isArray()) {   // Scenario: Split into individual elements in array if wildcard is used
-                        for (int i = 0; i < node.size(); i++) {
-                            updatedNodeMap.put(nodeMapKey + "/" + i, node.get(i));
-                        }
-                    } else {                                    // Scenario: Default scenario to just take direct value
-                        updatedNodeMap.put(
-                                nodeMapKey + "/" + path,
-                                path.matches("-?\\d+") ? node.get(Integer.parseInt(path)) : node.get(path)
-                        );
-                    }
-                }
-
-                nodeMap = updatedNodeMap;
-            }
         } catch (JsonProcessingException e) {
             logger.error("Failed to process provided JSON for path: " + originalPath, e);
-            return null;
-        } catch (NullPointerException e) {
-            logger.error(String.format("Failed to resolve pointer path \"%s\", provided by JSON path \"%s\"", jsonPath, originalPath), e);
-            return null;
+            return new LinkedHashMap<>();
+        }
+
+        // Traverse each path and update node
+        for (String path : jsonPathSplit) {
+            // Skip if empty (needed for first index due to path starting with "/", keeping it in case of human error)
+            if (path.isEmpty()) {
+                continue;
+            }
+
+            // Temporary updated node map for this iteration, will replace the original at end of each iteration
+            Map<String, JsonNode> iterationNodeMap = new LinkedHashMap<>();
+
+            // Traverse each node to traverse each path (handles splitting when wildcard is present)
+            for (String nodeMapKey : nodeMap.keySet()) {
+                JsonNode currentNode = nodeMap.get(nodeMapKey);
+
+                // Part 1: Generate new list of paths for this node (if it splits)
+                List<String> currentNodePathList = new ArrayList<>();
+                if (path.equals("*") && currentNode.isArray()) {    // Generate new node paths if this is an array and wildcard is used
+                    for (int i = 0; i < currentNode.size(); i++) {
+                        currentNodePathList.add(String.valueOf(i));
+                    }
+                } else {
+                    currentNodePathList.add(path);
+                }
+
+                // Part 2: Retrieve the new nodes based on the new list of paths
+                for (String currentNodePath : currentNodePathList) {
+                    JsonNode value = currentNodePath.matches("-?\\d+") ? currentNode.get(Integer.parseInt(currentNodePath)) : currentNode.get(currentNodePath);
+                    if (value != null) {
+                        // Only add if value is not null
+                        iterationNodeMap.put(nodeMapKey + "/" + currentNodePath, value);
+                    } else {
+                        // Otherwise, log a warning
+                        logger.error(String.format("Null value found when resolving pointer path \"%s\", provided by JSON path \"%s\"", nodeMapKey + "/" + currentNodePath, originalPath));
+                    }
+                }
+            }
+
+            nodeMap = iterationNodeMap;
         }
 
         // Post-processing: Convert from node to path-value map
@@ -129,7 +139,7 @@ public class JsonValueProvider implements ContentProvider {
                 );
             } catch (NullPointerException e) {
                 logger.error(String.format("Failed to resolve pointer path \"%s\", provided by JSON path \"%s\"", jsonPath, originalPath), e);
-                return null;
+                return new LinkedHashMap<>();
             }
         }
 
@@ -146,8 +156,9 @@ public class JsonValueProvider implements ContentProvider {
      *                    Starting the jsonPath with "{@code request.}" will result in request JSON being used.
      *                    Otherwise, response data will be used instead
      * @return Value located at path. Returns an empty String if path is invalid
+     * @deprecated Use {@link #getValuesFromJson(TSONContext, String)} instead
      */
-    public String getValueFromJson(TSONContext tsonContext, String jsonPath) {
+    String getValueFromJson(TSONContext tsonContext, String jsonPath) {
         // Store original path for logging
         String originalPath = jsonPath;
 
@@ -177,7 +188,7 @@ public class JsonValueProvider implements ContentProvider {
     }
 
     @Override
-    public String getContent(TSONContext tsonContext, String key) {
-        return getValueFromJson(tsonContext, key);
+    public Map<String, String> getContent(TSONContext tsonContext, String key) {
+        return getValuesFromJson(tsonContext, key);
     }
 }
