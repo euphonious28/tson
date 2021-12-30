@@ -239,4 +239,9 @@ public class TSONRunner {
         // Output result
         return tsonReporter;
     }
+
+    /* ----- GETTERS ------------------------------ */
+    public TSONInterpreter getTsonInterpreter() {
+        return tsonInterpreter;
+    }
 }
