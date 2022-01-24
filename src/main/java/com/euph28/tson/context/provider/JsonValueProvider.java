@@ -121,7 +121,7 @@ public class JsonValueProvider implements ContentProvider {
                         iterationNodeMap.put(nodeMapKey + "/" + currentNodePath, value);
                     } else {
                         // Otherwise, log a warning
-                        logger.error(String.format("Null value found when resolving pointer path \"%s\", provided by JSON path \"%s\"", nodeMapKey + "/" + currentNodePath, originalPath));
+                        logger.warn(String.format("Null value found when resolving pointer path \"%s\", provided by JSON path \"%s\"", nodeMapKey + "/" + currentNodePath, originalPath));
                     }
                 }
             }
