@@ -124,6 +124,14 @@ public class TSONRestClient implements KeywordProvider {
                 + (requestRoute.startsWith("/") ? "" : "/")
                 + requestRoute;
 
+        // Default request/response (in case of error)
+        requestData = new RequestData(urlString, requestBody);
+        responseData = new ResponseData(
+                -1,
+                "",
+                0
+        );
+
         // Setup request
         try {
             // Create connection objects
