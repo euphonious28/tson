@@ -92,7 +92,7 @@ public class Report {
     }
 
     public void setReportFallbackTitle(String reportTitle) {
-        this.reportTitle = reportTitle;
+        this.reportFallbackTitle = reportTitle;
     }
 
     public String getReportDetail() {
