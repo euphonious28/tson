@@ -65,10 +65,8 @@ public class Interpretation {
         String regex = "(?=\\b(" + String.join("|", keywordCodeList) + ")\\b)";
 
         /* 2. Pre-processing    : Remove comments */
-        /* 2.1 Remove multi-line comments */
-        content = content.replaceAll("/\\*.*?(?:\\*/|\\z)", "");
-        /* 2.2 Remove single-line comments */
-        content = content.replaceAll("//.*?(?:[\\n\\r]|\\z)", "");
+        /* 2 Remove multi-line and single comments (using an OR of both scenarios) */
+        content = content.replaceAll("(?://.*?(?:[\\n\\r]|\\z))|(?:/\\*.*?(?:\\*/|\\z))", "");
 
         /*
          * 3. Parsing           : Split from one long String into a list of Strings,

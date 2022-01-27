@@ -55,6 +55,10 @@ public class KeywordSend extends KeywordBase {
         report.setReportStep(String.format("Send %s to %s", statement.getValue(), tsonRestClient.getRequestData().getRequestUrl()));
         report.addAttachment("request.json", tsonRestClient.getRequestData().getRequestBody());
         report.addAttachment("response.json", tsonRestClient.getResponseData().getResponseBody());
+        report.addAttachment("time_start", String.valueOf(tsonRestClient.getResponseData().getTimeStart()));
+        report.addAttachment("time_connect", String.valueOf(tsonRestClient.getResponseData().getTimeConnect()));
+        report.addAttachment("time_response", String.valueOf(tsonRestClient.getResponseData().getTimeResponse()));
+        report.addAttachment("time_end", String.valueOf(tsonRestClient.getResponseData().getTimeEnd()));
         return true;
     }
 }
