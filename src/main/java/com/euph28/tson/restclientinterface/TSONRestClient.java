@@ -17,8 +17,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -62,7 +60,7 @@ public class TSONRestClient implements KeywordProvider {
     /**
      * Response data of the last received response
      */
-    ResponseData responseData = new ResponseData(-1, "", 0);
+    ResponseData responseData = new ResponseData();
 
     /* ----- VARIABLES: LISTENERS ------------------------------ */
     /**
@@ -126,11 +124,10 @@ public class TSONRestClient implements KeywordProvider {
 
         // Default request/response (in case of error)
         requestData = new RequestData(urlString, requestBody);
-        responseData = new ResponseData(
-                -1,
-                "",
-                0
-        );
+        responseData = new ResponseData();
+
+        // Track request times
+        long timeStart, timeConnected, timeResponse, timeEnd;
 
         // Setup request
         try {
@@ -143,9 +140,14 @@ public class TSONRestClient implements KeywordProvider {
             connection.addRequestProperty("Content-Type", "application/json");
             connection.setConnectTimeout(3000);
             connection.setReadTimeout(3000);
+            connection.setDoOutput(true);
+
+            // Open connection
+            timeStart = System.nanoTime();
+            connection.connect();
+            timeConnected = System.nanoTime();
 
             // Connection body
-            connection.setDoOutput(true);
             OutputStream outputStream = connection.getOutputStream();
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
             outputStreamWriter.write(requestBody);
@@ -161,32 +163,11 @@ public class TSONRestClient implements KeywordProvider {
             return;
         }
 
-        // Send request
-        Duration responseDuration;
-        try {
-            // Trigger listeners (before send)
-            listenerList.forEach(listener -> listener.onBeforeSend(this));
-
-            // Response duration: start
-            Instant instantStart = Instant.now();
-
-            // Connect
-            connection.connect();
-
-            // Response duration: end
-            responseDuration = Duration.between(instantStart, Instant.now());
-
-            // Trigger listeners (after send)
-            listenerList.forEach(listener -> listener.onAfterSend(this, true));
-        } catch (IOException e) {
-            logger.error("Failed to connect to remote host at: " + urlString, e);
-            return;
-        }
-
         // Read results
         try {
             // Read response body
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            timeResponse = System.nanoTime();
             String inputLine;
             StringBuilder inputBuffer = new StringBuilder();
             while ((inputLine = in.readLine()) != null) {
@@ -194,12 +175,17 @@ public class TSONRestClient implements KeywordProvider {
             }
             in.close();
 
+            timeEnd = System.nanoTime();
+
             // Generate result objects
             requestData = new RequestData(urlString, requestBody);
             responseData = new ResponseData(
                     connection.getResponseCode(),
                     inputBuffer.toString(),
-                    responseDuration.getNano()
+                    timeStart,
+                    timeConnected,
+                    timeResponse,
+                    timeEnd
             );
 
         } catch (IOException e) {
