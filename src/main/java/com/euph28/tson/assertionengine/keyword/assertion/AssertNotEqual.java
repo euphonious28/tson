@@ -31,9 +31,9 @@ public class AssertNotEqual extends PathValueAssertion {
             case RESULT_DEFAULT_FAIL:
                 return String.format("Actual value \"%s\" at path \"%s\" (based on \"%s\") is equal to invalid value \"%s\"", actualValue, path, getPathFromExpression(expressionValues), expressionValues[1]);
             case RESULT_COUNT_PASS:
-                return String.format("Count of value not being equal \"%s\" at path \"%s\" is equal to expected", actualValue, getPathFromExpression(expressionValues));
+                return String.format("Count of value not being equal \"%s\" at path \"%s\" is equal to expected", expressionValues[1], getPathFromExpression(expressionValues));
             case RESULT_COUNT_FAIL:
-                return String.format("Count of value not being equal \"%s\" at path \"%s\" is %s and is not equal to expected range \"%s\"", actualValue, getPathFromExpression(expressionValues), actualValue, expressionValues[2]);
+                return String.format("Count of value not being equal \"%s\" at path \"%s\" is %s and is not equal to expected range \"%s\"", expressionValues[1], getPathFromExpression(expressionValues), actualValue, expressionValues[2]);
             default:
                 LoggerFactory.getLogger(this.getClass()).error("Unknown result message requested for: " + Arrays.toString(expressionValues));
                 return "Unknown result message retrieved";
