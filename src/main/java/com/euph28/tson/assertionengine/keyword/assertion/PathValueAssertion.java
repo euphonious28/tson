@@ -43,6 +43,7 @@ public abstract class PathValueAssertion extends AssertionBase {
         // 2D array: Range (min,max) array
         int[][] expectedValueAsRange = new int[splitValues.length][2];
 
+        // TODO: Enable single value checking
         // Convert from String range to int range
         try {
             for (int i = 0; i < splitValues.length; i++) {
@@ -55,17 +56,21 @@ public abstract class PathValueAssertion extends AssertionBase {
                     // Case: value-
                     expectedValueAsRange[i][0] = Integer.MIN_VALUE;
                     expectedValueAsRange[i][1] = Integer.parseInt(value.substring(0, value.length() - 1));
-                } else {
+                } else if (value.contains("-")) {
                     // Case value1-value2
                     String[] splitRange = split(value, '-', true);
                     expectedValueAsRange[i][0] = Integer.parseInt(splitRange[0]);
                     expectedValueAsRange[i][1] = Integer.parseInt(splitRange[1]);
+                } else {
+                    // Case single value
+                    expectedValueAsRange[i][0] = Integer.parseInt(value);
+                    expectedValueAsRange[i][1] = Integer.parseInt(value);
                 }
             }
 
             // Assert the range
             for (int[] range : expectedValueAsRange) {
-                if (actualValue > range[0] && actualValue < range[1]) {
+                if (actualValue >= range[0] && actualValue <= range[1]) {
                     return true;
                 }
             }
