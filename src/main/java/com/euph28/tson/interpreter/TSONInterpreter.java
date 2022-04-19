@@ -62,7 +62,7 @@ public class TSONInterpreter {
 
         // Perform interpretation and store result
         Interpretation interpretation = new Interpretation(getKeywords(), content);
-        if (!interpretation.isValid()) {         // Early check if interpretation failed
+        if (interpretation.hasError()) {         // Early check if interpretation failed
             return false;
         }
         this.interpretation = interpretation;
