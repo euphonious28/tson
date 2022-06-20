@@ -125,7 +125,7 @@ public abstract class AssertionBase extends Keyword {
         boolean status = handleAssertion(tsonContext, statement);
 
         // Check if AssertionEngine should publish result (publish if upcoming keyword is action and not assertion)
-        Statement nextStatement = tsonContext.getTsonInterpreter().peekType(
+        Statement nextStatement = tsonContext.getTsonInterpreter().getCurrentInterpretation().peekType(
                 Arrays.asList(KeywordType.ACTION, KeywordType.ASSERTION)
         );
         if (nextStatement == null || nextStatement.getKeyword().getKeywordType() == KeywordType.ACTION) {

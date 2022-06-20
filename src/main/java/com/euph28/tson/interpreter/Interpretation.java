@@ -106,6 +106,7 @@ public class Interpretation {
      */
     public boolean hasError() {
         return interpretedTree == null
+                || interpretedTree.getText().isEmpty()
                 || errorListener.isHasError();
     }
 
