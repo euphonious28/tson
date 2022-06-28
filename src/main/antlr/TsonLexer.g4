@@ -9,7 +9,7 @@ lexer grammar TsonLexer;
     }
 
     private boolean isKeyword() {
-        return keywords.stream().anyMatch(term -> ahead(term, _input));
+        return keywords.stream().anyMatch(term -> term.equals(getText()));
     }
 
     private boolean ahead(final String word, final CharStream input) {
@@ -36,7 +36,7 @@ COMMENT_SINGLE      : '//' .+? NEWLINE ;
 COMMENT_MULTI       : '/*' .+? '*/' ;
 
 // Keywords
-KEYWORD             : {isKeyword()}? [A-Z]+ ;
+KEYWORD             : [A-Z_]* {isKeyword()}? ;
 
 // Whitespaces
 SPACE               : NEWLINE | WHITESPACE ;
