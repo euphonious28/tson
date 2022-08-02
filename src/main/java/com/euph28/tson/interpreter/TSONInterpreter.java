@@ -123,10 +123,14 @@ public class TSONInterpreter {
     String getContentFromProvider(String sourceName) {
         logger.trace("Retrieving content for: " + sourceName);
         for (ContentProvider provider : contentProviderList) {
-            String result = provider.getContent(sourceName);
-            if (!result.isEmpty()) {
-                logger.trace("Content found for source: " + sourceName);
-                return result;
+            try {
+                String result = provider.getContent(sourceName);
+                if (!result.isEmpty()) {
+                    logger.trace("Content found for source: " + sourceName);
+                    return result;
+                }
+            } catch (Exception e) {
+                logger.warn("Error received when retrieving content from provider", e);
             }
         }
         logger.info("Failed to retrieve content for source: " + sourceName);
