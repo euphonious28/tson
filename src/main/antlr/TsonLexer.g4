@@ -36,7 +36,7 @@ COMMENT_SINGLE      : '//' .+? NEWLINE ;
 COMMENT_MULTI       : '/*' .+? '*/' ;
 
 // Keywords
-KEYWORD             : [A-Z_]* {isKeyword()}? ;
+KEYWORD             : [A-Z_]+ {isKeyword()}? ;
 
 // Whitespaces
 SPACE               : NEWLINE | WHITESPACE ;
@@ -47,7 +47,7 @@ WHITESPACE          : (' ' | '\t') ;
 PROPERTIES_OPEN     : '[' -> pushMode(M_PROPERTY);
 
 // Text
-TEXT                : ~('[')+? ;
+WORD                : ~('[' | '\r' | '\n' | ' ' | '\t') ~('\r' | '\n' | ' ' | '\t')*;
 
 // ----- Mode: Property -----
 mode M_PROPERTY;
@@ -55,4 +55,4 @@ mode M_PROPERTY;
 PROPERTIES_CLOSE    : ']' -> popMode ;
 EQUAL               : '=' ;
 PROPERTY_STRING     : (('"' ~('"')* '"') | ('\'' ~('\'')* '\'')) -> type(STRING);
-PROPERTY_TEXT       : ~('[' | '=')+? -> type(TEXT);
+PROPERTY_TEXT       : ~(']' | '=')+? -> type(WORD);

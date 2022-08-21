@@ -18,6 +18,7 @@ public class TestInterpreter {
                 TestUtility.getTsonFile("simple01.tson", "")
         );
 
+        Assertions.assertFalse(interpretation.hasError());
         Assertions.assertEquals(7, interpretation.statementList.size());
     }
 }
