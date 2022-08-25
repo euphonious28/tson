@@ -4,7 +4,7 @@ options { tokenVocab=TsonLexer; }
 
  // Main entry
 file                : (entry)+ EOF;
-entry               : (statement | comment) (SPACE)*? ;
+entry               : (statement | comment) (SPACE)* ;
 
 // Comments
 comment             : COMMENT_SINGLE | COMMENT_MULTI ;
