@@ -6,3 +6,4 @@ SEND [Send a.json] a.json
 SEND [Send b.json] b.json
     EQUAL status=200
     EQUAL body.values.0=a body.values.1=b body.values.2=abc[ads]
+//    EQUAL status=503

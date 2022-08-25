@@ -32,7 +32,7 @@ lexer grammar TsonLexer;
 STRING              : ('"' ~('"')* '"') | ('\'' ~('\'')* '\'');
 
 // Comments
-COMMENT_SINGLE      : '//' .+? NEWLINE ;
+COMMENT_SINGLE      : '//' ~('\r' | '\n')* ;
 COMMENT_MULTI       : '/*' .+? '*/' ;
 
 // Keywords
