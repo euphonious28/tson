@@ -68,8 +68,8 @@ public class StatementListener extends TsonParserBaseListener {
     public void exitStatement(TsonParser.StatementContext ctx) {
         // Preprocessing: Cleanup value
         currentValue = currentValue
-                .trim()                                             // Remove trailing spaces
-                .replaceAll("[\\t\\n\\r]+", "")     // Convert all newline to space
+                .trim()                                               // Remove trailing spaces
+                .replaceAll("[\\t\\n\\r]+", " ")    // Convert all newline to space
                 .replaceAll("  +", " ");            // Remove repetitive spaces
 
         statementList.add(new Statement(
