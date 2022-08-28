@@ -5,11 +5,9 @@ import com.euph28.tson.runner.TSONRunner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Paths;
-
 public class TestInterpreter {
 
-    TSONRunner tsonRunner = new TSONRunner(Paths.get("").toAbsolutePath().toFile());
+    TSONRunner tsonRunner = TestUtility.getTsonRunner();
 
     @Test
     public void testSimple() {

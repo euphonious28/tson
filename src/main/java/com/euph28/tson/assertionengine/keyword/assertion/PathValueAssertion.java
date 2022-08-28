@@ -1,7 +1,9 @@
 package com.euph28.tson.assertionengine.keyword.assertion;
 
 import com.euph28.tson.assertionengine.TSONAssertionEngine;
+import com.euph28.tson.assertionengine.keyword.utility.AssertionUtilities;
 import com.euph28.tson.context.TSONContext;
+import com.euph28.tson.core.Utility;
 import com.euph28.tson.interpreter.Statement;
 import org.slf4j.LoggerFactory;
 
@@ -19,66 +21,6 @@ public abstract class PathValueAssertion extends AssertionBase {
      */
     PathValueAssertion(TSONAssertionEngine tsonAssertionEngine) {
         super(tsonAssertionEngine);
-    }
-
-    /* ----- METHODS: UTILITY ------------------------------ */
-
-    /**
-     * Check if the value is within the expected range.
-     * The expected value is a list of comma separated ranges which accepts the following format: <br/>
-     * <br/>
-     * {@code value+}: Accept all values from value to integer limit, inclusive <br/>
-     * {@code value-}: Accept all values from value to lower integer limit, inclusive <br/>
-     * {@code value1-value2}: Accept all values from value1 to value2, inclusive of both <br/>
-     *
-     * @param expectedValueRange Expected range of values that the actual value should be within
-     * @param actualValue        Actual value to be checked
-     * @return Returns {@code true} if {@code actualValue} is within {@code expectedValueRange}.
-     * Returns {@code false} if value is not in range or an error was encountered
-     */
-    private boolean checkIntegerValue(String expectedValueRange, int actualValue) {
-        // Split expected value into individual items
-        String[] splitValues = split(expectedValueRange, ',', true);
-
-        // 2D array: Range (min,max) array
-        int[][] expectedValueAsRange = new int[splitValues.length][2];
-
-        // TODO: Enable single value checking
-        // Convert from String range to int range
-        try {
-            for (int i = 0; i < splitValues.length; i++) {
-                String value = splitValues[i];
-                if (value.endsWith("+")) {
-                    // Case: value+
-                    expectedValueAsRange[i][0] = Integer.parseInt(value.substring(0, value.length() - 1));
-                    expectedValueAsRange[i][1] = Integer.MAX_VALUE;
-                } else if (value.endsWith("-")) {
-                    // Case: value-
-                    expectedValueAsRange[i][0] = Integer.MIN_VALUE;
-                    expectedValueAsRange[i][1] = Integer.parseInt(value.substring(0, value.length() - 1));
-                } else if (value.contains("-")) {
-                    // Case value1-value2
-                    String[] splitRange = split(value, '-', true);
-                    expectedValueAsRange[i][0] = Integer.parseInt(splitRange[0]);
-                    expectedValueAsRange[i][1] = Integer.parseInt(splitRange[1]);
-                } else {
-                    // Case single value
-                    expectedValueAsRange[i][0] = Integer.parseInt(value);
-                    expectedValueAsRange[i][1] = Integer.parseInt(value);
-                }
-            }
-
-            // Assert the range
-            for (int[] range : expectedValueAsRange) {
-                if (actualValue >= range[0] && actualValue <= range[1]) {
-                    return true;
-                }
-            }
-        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-            LoggerFactory.getLogger(this.getClass()).error("Failed to check integer value for range: " + expectedValueRange, e);
-            return false;
-        }
-        return false;
     }
 
 
@@ -150,13 +92,13 @@ public abstract class PathValueAssertion extends AssertionBase {
     @Override
     protected boolean handleAssertion(TSONContext tsonContext, Statement statement) {
         // Split into entries
-        String[] values = split(tsonContext.resolveContent(statement.getValue()), getEntryDelimiter(), false);
+        String[] values = Utility.split(tsonContext.resolveContent(statement.getValue()), getEntryDelimiter(), false);
 
         /* ===== HANDLING OF INDIVIDUAL ENTRY ===== */
         for (String entry : values) {
             /* ===== EXPRESSION SPLITTING AND DATA SETUP ===== */
             // Split into before and after operands
-            String[] splitValues = split(entry, getExpressionDelimiter(), true);
+            String[] splitValues = Utility.split(entry, getExpressionDelimiter(), true);
 
             // Retrieve JSON path
             String path;
@@ -227,7 +169,7 @@ public abstract class PathValueAssertion extends AssertionBase {
                     }
 
                     // Assert result based on count
-                    if (checkIntegerValue(splitValues[2], count)) {
+                    if (AssertionUtilities.checkValueRange(splitValues[2], count)) {
                         resultPass(
                                 getResultDescription(ResultMessageType.RESULT_COUNT_PASS, splitValues, String.valueOf(count), path),
                                 getStepDescription(splitValues),

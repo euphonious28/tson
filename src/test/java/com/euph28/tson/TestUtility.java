@@ -1,5 +1,7 @@
 package com.euph28.tson;
 
+import com.euph28.tson.runner.TSONRunner;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -10,6 +12,14 @@ import java.util.Objects;
  * Utility class for running tests
  */
 public class TestUtility {
+    /**
+     * Retrieve TSON Runner for use in JUnit tests
+     * @return TSON Runner
+     */
+    public static TSONRunner getTsonRunner() {
+        return new TSONRunner(Paths.get("").toAbsolutePath().toFile());
+    }
+
     /**
      * Retrieve TSON file content from resources
      * @param filename Name of TSON file to be retrieved
