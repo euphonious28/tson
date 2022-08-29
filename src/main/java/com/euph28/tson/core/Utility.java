@@ -2,12 +2,8 @@ package com.euph28.tson.core;
 
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.jar.Manifest;
 
 /**
  * Utility class that performs actions that have no specific category
@@ -22,18 +18,13 @@ public class Utility {
     public static String getVersion() {
         // Load version from manifest if its empty
         if (version.isEmpty()) {
-            // Default to no-version if failed to retrieve
-            version = "no-version";
+            // Retrieve version from manifest (code from: https://stackoverflow.com/a/49456168)
+            version = Utility.class.getPackage().getImplementationVersion();
 
-            // Retrieve and read manifest file for version
-            // Snippet from: https://dzone.com/articles/how-to-read-version-number-and-other-details-from
-            try {
-                URLClassLoader cl = (URLClassLoader) Utility.class.getClassLoader();
-                URL url = cl.findResource("META-INF/MANIFEST.MF");
-                Manifest manifest = new Manifest(url.openStream());
-                version = manifest.getMainAttributes().getValue("Implementation-Version");
-            } catch (IOException e) {
-                LoggerFactory.getLogger(Utility.class).error("Failed to retrieve TSON version. Defaulting to " + version + " instead", e);
+            // Check if no version
+            if(version == null) {
+                version = "no-version";
+                LoggerFactory.getLogger(Utility.class).error("Failed to retrieve TSON version. Defaulting to " + version + " instead");
             }
         }
 
