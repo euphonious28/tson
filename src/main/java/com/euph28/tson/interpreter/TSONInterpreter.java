@@ -62,6 +62,22 @@ public class TSONInterpreter {
         return currentInterpretation;
     }
 
+    /**
+     * Load a TSON file from filename into the interpreter
+     *
+     * @param sourceName File/source name of the content to be loaded
+     * @param errorListener Custom error listener to be used
+     * @return Returns {@code true} if content was successfully read
+     */
+    public Interpretation interpret(String sourceName, ErrorListener errorListener) {
+        // Retrieve content
+        String content = getContentFromProvider(sourceName);
+
+        // Perform interpretation and return
+        currentInterpretation = new Interpretation(getKeywords(), content, errorListener);
+        return currentInterpretation;
+    }
+
     /* ----- METHODS: ITERATOR ------------------------------ */
 
     /**

@@ -37,7 +37,7 @@ public class Interpretation {
     /**
      * Parser error listener/tracker
      */
-    ErrorListener errorListener = new ErrorListener();
+    ErrorListener errorListener;
 
     /**
      * Tree result of interpretation
@@ -52,6 +52,12 @@ public class Interpretation {
      * @param content TSON content found within a file
      */
     public Interpretation(List<Keyword> keywordList, String content) {
+        this(keywordList, content, new ErrorListener());
+    }
+
+    public Interpretation(List<Keyword> keywordList, String content, ErrorListener errorListener) {
+        this.errorListener = errorListener;
+
         // Parse
         parse(keywordList, content);
 
