@@ -16,4 +16,4 @@ propertiesMap       : propertiesKey EQUAL propertiesValue ;
 propertiesKey       : (WORD | STRING)+ ;
 propertiesValue     : (WORD | STRING)+ ;
 keyword             : KEYWORD ;
-value               : (WORD | SPACE | STRING)+? ;
+value               : (WORD | SPACE | STRING | comment)+? ;

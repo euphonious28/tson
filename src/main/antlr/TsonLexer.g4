@@ -28,12 +28,16 @@ lexer grammar TsonLexer;
     }
 }
 
+channels {
+    COMMENTS
+}
+
 // Strings
 STRING              : ('"' ~('"')* '"') | ('\'' ~('\'')* '\'');
 
 // Comments
-COMMENT_SINGLE      : '//' ~('\r' | '\n')* ;
-COMMENT_MULTI       : '/*' .+? '*/' ;
+COMMENT_SINGLE      : '//' ~('\r' | '\n')* -> channel(COMMENTS);
+COMMENT_MULTI       : '/*' .+? '*/' -> channel(COMMENTS);
 
 // Keywords
 KEYWORD             : [A-Z_]+ {isKeyword()}? ;
