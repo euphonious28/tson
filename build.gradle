@@ -91,6 +91,7 @@ generateGrammarSource {
     outputDirectory = file("${project.buildDir}/generated-src/antlr/main/com/euph28/tson/antlr")
 }
 compileJava.dependsOn generateGrammarSource
+compileKotlin.dependsOn generateGrammarSource
 
 /* ---------- RELEASE ---------- */
 publishing {
