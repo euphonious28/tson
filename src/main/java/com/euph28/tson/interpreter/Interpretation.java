@@ -4,6 +4,7 @@ import com.euph28.tson.antlr.TsonLexer;
 import com.euph28.tson.antlr.TsonParser;
 import com.euph28.tson.core.keyword.Keyword;
 import com.euph28.tson.core.keyword.KeywordType;
+import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -12,6 +13,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,12 +39,17 @@ public class Interpretation {
     /**
      * Parser error listener/tracker
      */
-    ErrorListener errorListener;
+    ErrorListener errorListener = new ErrorListener();
 
     /**
-     * Tree result of interpretation
+     * TSON Content
      */
-    ParseTree interpretedTree;
+    String content;
+
+    /**
+     * List of keywords
+     */
+    List<Keyword> keywordList;
 
     /* ----- CONSTRUCTOR ------------------------------ */
 
@@ -52,32 +59,23 @@ public class Interpretation {
      * @param content TSON content found within a file
      */
     public Interpretation(List<Keyword> keywordList, String content) {
-        this(keywordList, content, new ErrorListener());
-    }
-
-    public Interpretation(List<Keyword> keywordList, String content, ErrorListener errorListener) {
-        this.errorListener = errorListener;
-
-        // Parse
-        parse(keywordList, content);
+        this.keywordList = new ArrayList<>(keywordList);
+        this.content = content;
 
         // Generate basic Statement list
         StatementListener statementListener = new StatementListener(keywordList);
-        walkListener(statementListener);
+        parse(0, statementListener, errorListener);
         statementList = statementListener.getStatementList();
     }
 
     /* ----- METHODS: PARSER ------------------------------ */
 
     /**
-     * Parse TSON content
-     *
-     * @param keywordList List of {@link Keyword} to look for when parsing
-     * @param content     TSON content to be parsed
+     * Run lexer on TSON content
      */
-    void parse(List<Keyword> keywordList, String content) {
+    TsonLexer getLexer() {
         // ANTLR4 Lexer, input the keywordList for dynamic keyword parsing
-        TsonLexer lexer = new TsonLexer(
+        return new TsonLexer(
                 CharStreams.fromString(content),
                 new HashSet<>(keywordList
                         .stream()
@@ -85,22 +83,24 @@ public class Interpretation {
                         .collect(Collectors.toList())
                 )
         );
-
-        // ANTLR4 Parser, using the lexer results
-        CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-        TsonParser parser = new TsonParser(tokenStream);
-        parser.addErrorListener(errorListener);
-
-        // Generate tree and store tree for walking (using .file() as that is the root entry)
-        this.interpretedTree = parser.file();
     }
 
     /**
-     * Walk listener through the parse tree result from {@link #parse(List, String)}
+     * Parse TSON content from lexer and walk through the parsed tree
      *
+     * @param channel Channel to be used from lexer
      * @param listener Listener to be used for the walk
      */
-    public void walkListener(ParseTreeListener listener) {
+    public void parse(int channel, ParseTreeListener listener, BaseErrorListener errorListener) {
+        // ANTLR4 Parser, using the lexer results
+        CommonTokenStream tokenStream = new CommonTokenStream(getLexer(), channel);
+        TsonParser parser = new TsonParser(tokenStream);
+        parser.addErrorListener(errorListener);
+
+        // Generate tree (using .file() as that is the root entry)
+        ParseTree interpretedTree = parser.file();
+
+        // Walk through the tree
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(listener, interpretedTree);
     }
@@ -111,9 +111,7 @@ public class Interpretation {
      * @return Returns {@code true} if an error was found parsing, returns {@code false} if otherwise
      */
     public boolean hasError() {
-        return interpretedTree == null
-                || interpretedTree.getText().isEmpty()
-                || errorListener.isHasError();
+        return errorListener.isHasError();
     }
 
     /* ----- METHODS: ITERATOR ------------------------------ */
