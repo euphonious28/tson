@@ -138,8 +138,8 @@ public class TSONRestClient implements KeywordProvider {
             // Customize connection
             connection.setRequestMethod(requestVerb);
             connection.addRequestProperty("Content-Type", "application/json");
-            connection.setConnectTimeout(3000);
-            connection.setReadTimeout(3000);
+            connection.setConnectTimeout(60000);
+            connection.setReadTimeout(60000);
             connection.setDoOutput(true);
 
             // Open connection

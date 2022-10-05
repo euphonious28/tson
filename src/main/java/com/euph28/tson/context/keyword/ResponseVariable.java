@@ -2,6 +2,7 @@ package com.euph28.tson.context.keyword;
 
 import com.euph28.tson.context.TSONContext;
 import com.euph28.tson.context.VariableType;
+import com.euph28.tson.core.Utility;
 import com.euph28.tson.core.keyword.Keyword;
 import com.euph28.tson.core.keyword.KeywordType;
 import com.euph28.tson.interpreter.Statement;
@@ -53,12 +54,12 @@ public class ResponseVariable extends Keyword {
         report.setReportFallbackTitle("Create variable from response");
 
         // Split into entries
-        String[] values = split(tsonContext.resolveContent(statement.getValue()), ' ', true);
+        String[] values = Utility.split(tsonContext.resolveContent(statement.getValue()), ' ', true);
 
         /* ===== HANDLING OF INDIVIDUAL ENTRY ===== */
         for (String entry : values) {
             // Split into before and after operand
-            String[] splitValues = split(entry, '=', true);
+            String[] splitValues = Utility.split(entry, '=', true);
             // Error check: entry is invalid (not enough/too many parts)
             if (splitValues.length != 2) {
                 logger.error("Invalid number of parameters (should be 2) for response variable: " + statement.getValue());

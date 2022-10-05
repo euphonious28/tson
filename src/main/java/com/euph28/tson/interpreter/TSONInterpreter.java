@@ -35,9 +35,9 @@ public class TSONInterpreter {
     List<Keyword> keywordList = new ArrayList<>();
 
     /**
-     * Interpretation of a TSON content. Can be converted to a list in the future for parallel run
+     * Current (latest) interpretation
      */
-    Interpretation interpretation;
+    Interpretation currentInterpretation;
 
     /* ----- CONSTRUCTOR ------------------------------ */
 
@@ -53,58 +53,39 @@ public class TSONInterpreter {
      * @param sourceName File/source name of the content to be loaded
      * @return Returns {@code true} if content was successfully read
      */
-    public boolean interpret(String sourceName) {
+    public Interpretation interpret(String sourceName) {
         // Retrieve content
         String content = getContentFromProvider(sourceName);
-        if (content.isEmpty()) {                // Early check if content retrieval failed
-            return false;
-        }
 
-        // Perform interpretation and store result
-        Interpretation interpretation = new Interpretation(getKeywords(), content);
-        if (!interpretation.isValid()) {         // Early check if interpretation failed
-            return false;
-        }
-        this.interpretation = interpretation;
+        // Perform interpretation and return
+        currentInterpretation = new Interpretation(getKeywords(), content);
+        return currentInterpretation;
+    }
 
-        return true;
+    /**
+     * Load a TSON file from filename into the interpreter
+     *
+     * @param sourceName File/source name of the content to be loaded
+     * @param errorListener Custom error listener to be used
+     * @return Returns {@code true} if content was successfully read
+     */
+    public Interpretation interpret(String sourceName, ErrorListener errorListener) {
+        // Retrieve content
+        String content = getContentFromProvider(sourceName);
+
+        // Perform interpretation and return
+        currentInterpretation = new Interpretation(getKeywords(), content, errorListener);
+        return currentInterpretation;
     }
 
     /* ----- METHODS: ITERATOR ------------------------------ */
 
     /**
-     * @see Interpretation#peek()
+     * Retrieve the current (latest) {@link Interpretation}
+     * @return The current (latest) {@link Interpretation}
      */
-    public Statement peek() {
-        return interpretation.peek();
-    }
-
-    /**
-     * @see Interpretation#peekType(List)
-     */
-    public Statement peekType(List<KeywordType> targetTypes) {
-        return interpretation.peekType(targetTypes);
-    }
-
-    /**
-     * @see Interpretation#getNext()
-     */
-    public Statement getNext() {
-        return interpretation.getNext();
-    }
-
-    /**
-     * @see Interpretation#isEof()
-     */
-    public boolean isEof() {
-        return interpretation.isEof();
-    }
-
-    /**
-     * @see Interpretation#resetIterator()
-     */
-    public void resetIterator() {
-        interpretation.resetIterator();
+    public Interpretation getCurrentInterpretation() {
+        return currentInterpretation;
     }
 
     /* ----- METHODS: PROVIDERS ------------------------------ */
@@ -158,10 +139,14 @@ public class TSONInterpreter {
     String getContentFromProvider(String sourceName) {
         logger.trace("Retrieving content for: " + sourceName);
         for (ContentProvider provider : contentProviderList) {
-            String result = provider.getContent(sourceName);
-            if (!result.isEmpty()) {
-                logger.trace("Content found for source: " + sourceName);
-                return result;
+            try {
+                String result = provider.getContent(sourceName);
+                if (!result.isEmpty()) {
+                    logger.trace("Content found for source: " + sourceName);
+                    return result;
+                }
+            } catch (Exception e) {
+                logger.warn("Error received when retrieving content from provider", e);
             }
         }
         logger.info("Failed to retrieve content for source: " + sourceName);

@@ -6,6 +6,7 @@ import com.euph28.tson.context.VariableType;
 import com.euph28.tson.core.keyword.KeywordType;
 import com.euph28.tson.core.provider.ContentProvider;
 import com.euph28.tson.filereader.FileReader;
+import com.euph28.tson.interpreter.Interpretation;
 import com.euph28.tson.interpreter.Statement;
 import com.euph28.tson.interpreter.TSONInterpreter;
 import com.euph28.tson.reporter.TSONReporter;
@@ -175,15 +176,16 @@ public class TSONRunner {
         TSONReporter lastActionReporter = tsonReporter;
 
         // Parse content
-        if (!tsonInterpreter.interpret(filename)) {
+        Interpretation interpretation = tsonInterpreter.interpret(filename);
+        if (interpretation == null || interpretation.hasError()) {
             logger.error("Failed to read TSON file: " + filename);
             return tsonReporter;
         }
 
         // Run statements
-        while (!tsonInterpreter.isEof()) {
+        while (!interpretation.isEof()) {
             // Get statement
-            Statement statement = tsonInterpreter.getNext();
+            Statement statement = interpretation.getNext();
 
             // Validity check of next statement
             if (statement == null || statement.getKeyword() == null) {

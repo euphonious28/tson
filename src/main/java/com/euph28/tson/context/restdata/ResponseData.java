@@ -1,10 +1,18 @@
 package com.euph28.tson.context.restdata;
 
+import com.euph28.tson.context.restdata.printer.VsCodeJacksonPrettyPrinter;
+import com.euph28.tson.restclientinterface.TSONRestClient;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Data related to response received from server
  */
 public class ResponseData {
     /* ----- VARIABLES ------------------------------ */
+    final Logger logger = LoggerFactory.getLogger(TSONRestClient.class);
 
     /**
      * Status code of the response
@@ -57,7 +65,7 @@ public class ResponseData {
      */
     public ResponseData(int responseStatus, String responseBody, long timeStart, long timeConnect, long timeResponse, long timeEnd) {
         this.responseStatus = responseStatus;
-        this.responseBody = responseBody;
+        setResponseBody(responseBody);
         this.timeStart = timeStart;
         this.timeConnect = timeConnect;
         this.timeResponse = timeResponse;
@@ -65,6 +73,21 @@ public class ResponseData {
     }
 
     /* ----- SETTERS & GETTERS ------------------------------ */
+
+    /**
+     * Set response body and format it if applicable (if it is JSON)
+     * @param responseBody Response body
+     */
+    void setResponseBody(String responseBody) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Object json = mapper.readValue(responseBody, Object.class);
+            this.responseBody = mapper.writer(new VsCodeJacksonPrettyPrinter()).writeValueAsString(json);
+        } catch (JsonProcessingException e) {
+            logger.warn("Unable to format response body as JSON String");
+            this.responseBody = responseBody;
+        }
+    }
 
     /**
      * Retrieve the status code of the response

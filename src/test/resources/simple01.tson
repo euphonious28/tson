@@ -1,0 +1,9 @@
+ID TSON-SIMPLE-01
+DESC Simple TSON test script to test out the Keyword parsing
+
+SEND [Send a.json] a.json
+    EQUAL status=200
+SEND [Send b.json] b.json
+    EQUAL status=200
+    EQUAL body.values.0=a body.values.1=b body.values.2=abc[ads]
+//    EQUAL status=503

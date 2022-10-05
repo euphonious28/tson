@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -55,15 +56,13 @@ public class FileReader implements ContentProvider {
     /**
      * Read a file and return String of all the content
      *
-     * @param filename Name of the file to read
+     * @param filename Path of the file to read
      * @return String with all the content within {@code filename}. Returns an empty {@code String} if reading failed
      */
-    String readFile(String filename) {
-        Path filepath = rootDirectory.resolve(filename);
-        logger.trace("Reading file: " + filename);
-
+    String readFile(Path filename) {
         try {
-            return new String(Files.readAllBytes(filepath));
+            logger.trace("Reading file: " + filename);
+            return new String(Files.readAllBytes(filename));
         } catch (IOException e) {
             logger.warn("Failed to read file: " + filename, e);
         }
@@ -75,6 +74,17 @@ public class FileReader implements ContentProvider {
 
     @Override
     public String getContent(String sourceName) {
-        return readFile(sourceName);
+        // Retrieve file as a path
+        Path filepath;
+
+        // Path sanity check (ensure sourceName makes sense) as this method is open to calls
+        try {
+            filepath = rootDirectory.resolve(sourceName);
+        } catch (InvalidPathException e) {
+            logger.info("Invalid path provided (only first line is shown): " + sourceName.split("\\R+", 1)[0]);
+            return "";
+        }
+
+        return readFile(filepath);
     }
 }
