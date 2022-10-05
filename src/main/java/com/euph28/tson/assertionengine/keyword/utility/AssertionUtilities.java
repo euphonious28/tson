@@ -37,9 +37,9 @@ public class AssertionUtilities {
                     // Case: value-
                     expectedValueAsRange[i][0] = Double.MIN_VALUE;
                     expectedValueAsRange[i][1] = Double.parseDouble(value.substring(0, value.length() - 1));
-                } else if (value.contains("-")) {
+                } else if (value.substring(1).contains("-")) {  // Account for first value being negative
                     // Case value1-value2
-                    String[] splitRange = Utility.split(value, '-', true);
+                    String[] splitRange = value.split("(?<=[0-9])-");
                     expectedValueAsRange[i][0] = Double.parseDouble(splitRange[0]);
                     expectedValueAsRange[i][1] = Double.parseDouble(splitRange[1]);
                 } else {
